@@ -27,7 +27,12 @@ export default function PrivacyPage() {
       </p>
 
       <h2 className="text-xl font-semibold mt-8 mb-2">Contact</h2>
-      <p>Email: pootsjames@gmail.com</p>
+        <p>
+            Email:{" "}
+            <a href="mailto:pootsjames@gmail.com" className="underline">
+                pootsjames@gmail.com
+             </a>
+        </p>
     </main>
   );
 }
