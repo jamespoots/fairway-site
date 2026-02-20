@@ -55,4 +55,7 @@ export default function PrivacyPage() {
       </p>
     </main>
   );
+export const metadata = {
+  title: "Privacy Policy",
+};
 }
