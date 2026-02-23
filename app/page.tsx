@@ -18,11 +18,11 @@ export default function HomePage() {
         </div>
 
         {/* Headline */}
-        <h1 className="font-bold tracking-tight leading-[1.1] mb-6 max-w-2xl mx-auto">
-          <span className="block text-[2.5rem] sm:text-5xl md:text-6xl">
+        <h1 className="font-bold tracking-tight leading-[1.1] mb-8 max-w-3xl mx-auto">
+          <span className="block text-[clamp(2.2rem,5vw,4rem)]">
             See Your Swing.
           </span>
-          <span className="block text-[2.5rem] sm:text-5xl md:text-6xl">
+          <span className="block text-[clamp(2.2rem,5vw,4rem)]">
             Know Your Swing.
           </span>
         </h1>
@@ -50,13 +50,13 @@ export default function HomePage() {
         </div>
 
         {/* Demo Screenshot */}
-        <div className="flex justify-center mb-28">
+        <div className="flex justify-center mb-32">
           <div className="p-4 bg-gradient-to-b from-emerald-400/8 to-transparent rounded-3xl">
             <Image
               src="/demo-swing.jpg"
               alt="Fairway swing playback"
-              width={500}
-              height={900}
+              width={600}
+              height={1100}
               className="rounded-2xl shadow-2xl border border-gray-800"
             />
           </div>
