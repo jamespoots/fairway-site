@@ -1,6 +1,16 @@
 export default function HomePage() {
   return (
     <main className="max-w-3xl mx-auto px-6 py-20 text-center">
+      
+      {/* Logo */}
+      <div className="flex justify-center mb-8">
+        <img
+          src="/icon.png"
+          alt="Fairway logo"
+          className="w-24 h-24 rounded-2xl shadow-lg"
+        />
+      </div>
+
       <h1 className="text-4xl font-bold tracking-tight mb-6">
         Hands-Free Swing Capture
       </h1>
