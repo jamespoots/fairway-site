@@ -12,7 +12,7 @@ export default function HomePage() {
             alt="Fairway logo"
             width={112}
             height={112}
-            className="rounded-2xl shadow-2xl shadow-emerald-500/20"
+            className="rounded-2xl shadow-2xl shadow-emerald-400/15"
             priority
           />
         </div>
@@ -46,7 +46,7 @@ export default function HomePage() {
 
         {/* Demo Screenshot */}
         <div className="flex justify-center mb-28">
-          <div className="p-4 bg-gradient-to-b from-emerald-500/10 to-transparent rounded-3xl">
+          <div className="p-4 bg-gradient-to-b from-emerald-400/8 to-transparent rounded-3xl">
             <Image
               src="/demo-swing.jpg"
               alt="Fairway swing playback"
@@ -57,8 +57,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Feature Section */}
-        <section id="demo" className="text-left max-w-2xl mx-auto">
+        {/* Feature Section (Centered Now) */}
+        <section id="demo" className="max-w-2xl mx-auto text-center">
 
           <h2 className="text-2xl font-semibold text-white mb-6">
             Instant Golf Swing Replay
@@ -75,7 +75,7 @@ export default function HomePage() {
             <p>No tapping record.</p>
           </div>
 
-          <ul className="text-gray-300 space-y-2 mb-10">
+          <ul className="text-gray-300 space-y-3 mb-10 list-none">
             <li>• Club-triggered recording</li>
             <li>• 10-second swing capture</li>
             <li>• Instant looping playback</li>
