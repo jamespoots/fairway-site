@@ -57,7 +57,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Feature Section (Centered Now) */}
+        {/* Feature Section */}
         <section id="demo" className="max-w-2xl mx-auto text-center">
 
           <h2 className="text-2xl font-semibold text-white mb-6">
@@ -75,10 +75,10 @@ export default function HomePage() {
             <p>No tapping record.</p>
           </div>
 
-          <ul className="text-gray-300 space-y-3 mb-10 list-none">
-            <li>• Club-triggered recording</li>
-            <li>• 10-second swing capture</li>
-            <li>• Instant looping playback</li>
+          <ul className="text-gray-300 space-y-3 mb-10 list-disc list-inside inline-block text-left">
+            <li>Club-triggered recording</li>
+            <li>10-second swing capture</li>
+            <li>Instant looping playback</li>
           </ul>
 
           <div className="text-xl font-semibold text-white space-y-1">
