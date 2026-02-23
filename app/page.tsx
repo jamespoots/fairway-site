@@ -6,7 +6,7 @@ export default function HomePage() {
       <div className="max-w-3xl mx-auto px-6 py-28 text-center">
 
         {/* Logo */}
-        <div className="flex justify-center mb-12">
+        <div className="flex justify-center mb-8">
           <Image
             src="/icon.png"
             alt="Fairway logo"
@@ -17,15 +17,16 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Headline */}
+        {/* Hero Headline */}
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6">
-          Hands-Free Swing Capture
+          See Your Swing.
+          <br />
+          Know Your Swing.
         </h1>
 
-        {/* Subtitle */}
+        {/* Hero Subtext */}
         <p className="text-lg text-gray-200 mb-14 leading-relaxed max-w-2xl mx-auto">
-          Fairway automatically records your golf swing the moment you step away.<br />
-          No timers. No tapping. Just swing.
+          Each swing is captured and instantly looped — while the feel is still fresh.
         </p>
 
         {/* CTA Buttons */}
@@ -41,7 +42,7 @@ export default function HomePage() {
             href="#demo"
             className="px-8 py-3 border border-gray-600 rounded-lg font-medium hover:bg-white/10 transition"
           >
-            See How It Works
+            See It In Action
           </a>
         </div>
 
@@ -50,7 +51,7 @@ export default function HomePage() {
           <div className="p-4 bg-gradient-to-b from-emerald-500/10 to-transparent rounded-3xl">
             <Image
               src="/demo-swing.jpg"
-              alt="Fairway Cam swing playback"
+              alt="Fairway swing playback"
               width={500}
               height={900}
               className="rounded-2xl shadow-2xl border border-gray-800"
@@ -58,17 +59,36 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Secondary Section */}
-        <section id="demo" className="text-left">
-          <h2 className="text-2xl font-semibold mb-4">
-            Designed for Range Practice
+        {/* Feature Section */}
+        <section id="demo" className="text-left max-w-2xl mx-auto">
+
+          <h2 className="text-2xl font-semibold text-white mb-6">
+            Instant Golf Swing Replay
           </h2>
 
-          <p className="text-gray-400 leading-relaxed max-w-2xl">
-            Set up your phone. Tap AUTO. Step into your stance. Fairway
-            detects motion at the lens and records your swing automatically.
-            Instantly scrub through playback and repeat without interruption.
+          <p className="text-gray-300 leading-relaxed mb-6">
+            Lift your club toward the camera to start recording.
+            <br />
+            Step back and swing.
           </p>
+
+          <div className="text-gray-400 space-y-2 mb-6">
+            <p>No timers.</p>
+            <p>No tapping record.</p>
+          </div>
+
+          <ul className="text-gray-300 space-y-2 mb-10">
+            <li>• Club-triggered recording</li>
+            <li>• 10-second swing capture</li>
+            <li>• Instant looping playback</li>
+          </ul>
+
+          <div className="text-xl font-semibold text-white space-y-1">
+            <p>Swing.</p>
+            <p>Loop.</p>
+            <p>Repeat.</p>
+          </div>
+
         </section>
 
       </div>
