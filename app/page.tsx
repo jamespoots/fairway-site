@@ -18,8 +18,13 @@ export default function HomePage() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-6 max-w-2xl mx-auto">
-          See Your Swing. Know Your Swing.
+        <h1 className="font-bold tracking-tight leading-[1.1] mb-6 max-w-2xl mx-auto">
+          <span className="block text-[2.5rem] sm:text-5xl md:text-6xl">
+            See Your Swing.
+          </span>
+          <span className="block text-[2.5rem] sm:text-5xl md:text-6xl">
+            Know Your Swing.
+          </span>
         </h1>
 
         {/* Subtitle */}
