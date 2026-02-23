@@ -6,7 +6,7 @@ export default function HomePage() {
       <div className="max-w-3xl mx-auto px-6 py-28 text-center">
 
         {/* Logo */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-10">
           <Image
             src="/icon.png"
             alt="Fairway logo"
@@ -17,30 +17,28 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Hero Headline */}
-        <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6">
-          See Your Swing.
-          <br />
-          Know Your Swing.
+        {/* Headline */}
+        <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-6 max-w-2xl mx-auto">
+          See Your Swing. Know Your Swing.
         </h1>
 
-        {/* Hero Subtext */}
-        <p className="text-lg text-gray-200 mb-14 leading-relaxed max-w-2xl mx-auto">
+        {/* Subtitle */}
+        <p className="text-lg text-gray-100 mb-14 leading-relaxed max-w-2xl mx-auto">
           Each swing is captured and instantly looped — while the feel is still fresh.
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex justify-center gap-4 mb-24">
+        <div className="flex justify-center gap-4 mb-24 flex-wrap">
           <a
             href="#"
-            className="px-8 py-3 bg-white text-black rounded-lg font-semibold hover:opacity-90 transition"
+            className="px-8 py-3 bg-white text-black rounded-lg font-semibold hover:opacity-90 transition min-w-[180px]"
           >
             Get Fairway
           </a>
 
           <a
             href="#demo"
-            className="px-8 py-3 border border-gray-600 rounded-lg font-medium hover:bg-white/10 transition"
+            className="px-8 py-3 border border-gray-600 rounded-lg font-medium hover:bg-white/10 transition min-w-[180px]"
           >
             See It In Action
           </a>
