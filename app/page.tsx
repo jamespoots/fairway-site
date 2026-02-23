@@ -3,10 +3,10 @@ import Image from "next/image";
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-black text-white">
-      <div className="max-w-4xl mx-auto px-6 py-28 text-center">
+      <div className="max-w-4xl mx-auto px-6 pt-36 pb-32 text-center">
 
         {/* Logo */}
-        <div className="flex justify-center mb-10">
+        <div className="flex justify-center mb-12">
           <Image
             src="/icon.png"
             alt="Fairway logo"
@@ -17,8 +17,8 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Hero Headline */}
-        <h1 className="font-bold tracking-tight leading-[1.1] mb-12 max-w-3xl mx-auto">
+        {/* Hero */}
+        <h1 className="font-bold tracking-tight leading-[1.1] mb-14 max-w-3xl mx-auto">
           <span className="block text-[clamp(2.2rem,5vw,4rem)]">
             See Your Swing.
           </span>
@@ -28,12 +28,12 @@ export default function HomePage() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-lg text-gray-200 mb-16 leading-relaxed max-w-2xl mx-auto">
+        <p className="text-lg text-gray-200 mb-20 leading-relaxed max-w-2xl mx-auto">
           Each swing is captured and instantly looped — while the feel is still fresh.
         </p>
 
-        {/* CTA Buttons */}
-        <div className="flex justify-center gap-4 mb-32 flex-wrap">
+        {/* CTA */}
+        <div className="flex justify-center gap-4 mb-36 flex-wrap">
           <a
             href="#"
             className="px-8 py-3 bg-white text-black rounded-lg font-semibold hover:opacity-90 transition min-w-[180px]"
@@ -49,38 +49,38 @@ export default function HomePage() {
           </a>
         </div>
 
-        {/* Demo Screenshot */}
-        <div className="flex justify-center mb-40">
-          <div className="p-4 bg-gradient-to-b from-emerald-400/8 to-transparent rounded-3xl">
+        {/* Screenshot */}
+        <div className="flex justify-center mb-48">
+          <div className="p-5 bg-gradient-to-b from-emerald-400/8 to-transparent rounded-3xl">
             <Image
               src="/demo-swing.jpg"
               alt="Fairway swing playback"
-              width={600}
-              height={1100}
+              width={650}
+              height={1200}
               className="rounded-2xl shadow-2xl border border-gray-800"
             />
           </div>
-          </div>
+        </div>
 
-        {/* Feature Section */}
-        <section id="demo" className="max-w-2xl mx-auto text-center pt-8">
+        {/* Features */}
+        <section id="demo" className="max-w-2xl mx-auto text-center pt-12">
 
-          <h2 className="text-2xl font-semibold text-white mb-8">
+          <h2 className="text-2xl font-semibold text-white mb-10">
             Instant Golf Swing Replay
           </h2>
 
-          <p className="text-gray-300 leading-relaxed mb-6">
+          <p className="text-gray-300 leading-relaxed mb-8">
             Lift your club toward the camera to start recording.
             <br />
             Step back and swing.
           </p>
 
-          <div className="text-gray-400 space-y-2 mb-6">
+          <div className="text-gray-400 space-y-2 mb-8">
             <p>No timers.</p>
             <p>No tapping record.</p>
           </div>
 
-          <ul className="text-gray-300 space-y-3 mb-10 list-disc list-inside inline-block text-left">
+          <ul className="text-gray-300 space-y-3 mb-12 list-disc list-inside inline-block text-left">
             <li>Club-triggered recording</li>
             <li>10-second swing capture</li>
             <li>Instant looping playback</li>
