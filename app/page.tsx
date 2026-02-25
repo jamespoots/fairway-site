@@ -1,44 +1,36 @@
+
 import Image from "next/image";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-black text-white">
-      <div className="max-w-4xl mx-auto px-6 pt-36 pb-32 text-center">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(20,20,20,1)_0%,rgba(0,0,0,1)_60%)] text-white">
+      <div className="max-w-4xl mx-auto px-6 pt-40 pb-28 text-center">
 
         {/* Hero */}
-        <div className="text-center space-y-8">
-
+        <div className="text-center animate-fade-in">
           <h1
-            className="text-[clamp(2.8rem,6vw,4.5rem)] tracking-tight leading-[1.1]"
+            className="text-[clamp(2.8rem,6vw,4.5rem)] tracking-tight leading-[1.1] mb-32"
             style={{ fontFamily: '"Times New Roman", Times, serif' }}
           >
             Know your swing.
           </h1>
-
-          <div className="flex flex-col items-center gap-6">
-
-            <Image
-              src="/logo_black.png"
+          <div className="flex flex-col items-center mt-8 mb-8">
+            <img
+              src="/logo_transparent.svg"
               alt="Fairway logo"
-              width={180}
-              height={180}
-              className="rounded-xl"
+              className="w-[200px] h-[200px]"
             />
-
             <span
-              className="text-[clamp(2.8rem,6vw,4.5rem)] tracking-tight leading-[1.1]"
+              className="text-[clamp(2.35rem,5.4vw,3.8rem)] tracking-tight leading-[1.1] mt-4"
               style={{ fontFamily: '"Times New Roman", Times, serif' }}
             >
               Fairway
             </span>
-
           </div>
-
         </div>
 
-
         {/* CTA */}
-        <div className="flex justify-center gap-4 mb-36 flex-wrap">
+        <div className="flex justify-center gap-4 mb-28 flex-wrap">
           <a
             href="https://apps.apple.com/app/id0000000000"
             target="_blank"
@@ -55,68 +47,51 @@ export default function HomePage() {
           </a>
         </div>
 
-        {/* Screenshots */}
-        <section className="mb-48 px-6">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
+        {/* Divider before screenshots */}
 
+        {/* Screenshots */}
+        <section className="mb-32 px-6">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
             <Image
               src="/app-store/v1.0/01_lift-club.png"
               alt="Lift your club to start recording"
               width={380}
               height={820}
-              className="rounded-3xl shadow-2xl border border-gray-800"
+              className="rounded-3xl shadow-[0_30px_80px_rgba(0,0,0,0.6)] border border-gray-900"
               priority
             />
-
             <Image
               src="/app-store/v1.0/02_no-timers.png"
               alt="No timers. No tapping."
               width={380}
               height={820}
-              className="rounded-3xl shadow-2xl border border-gray-800"
+              className="rounded-3xl shadow-[0_30px_80px_rgba(0,0,0,0.6)] border border-gray-900"
             />
-
             <Image
               src="/app-store/v1.0/03_instant-replay.png"
               alt="Instant replay. On loop."
               width={380}
               height={820}
-              className="rounded-3xl shadow-2xl border border-gray-800"
+              className="rounded-3xl shadow-[0_30px_80px_rgba(0,0,0,0.6)] border border-gray-900"
             />
-
           </div>
         </section>
 
-        {/* Features */}
-        <section id="demo" className="max-w-2xl mx-auto text-center pt-12">
-
-          <h2 className="text-2xl font-semibold text-white mb-10">
-            Instant Golf Swing Replay
+        {/* Emotional Close Section */}
+        <section className="max-w-3xl mx-auto text-center pt-24">
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-8">
+            See it back instantly.
           </h2>
-
-          <p className="text-gray-300 leading-relaxed mb-8">
-            Lift your club toward the camera to start recording.
-            <br />
-            Step back and swing.
+          <p className="text-gray-400 text-lg leading-relaxed mb-12">
+            Every swing is captured and replayed immediately —
+            <br className="hidden md:block" />
+            while the feel is still fresh.
           </p>
-
-          <div className="text-gray-400 space-y-2 mb-8">
-            <p>No timers.</p>
-            <p>No tapping record.</p>
-          </div>
-
-          <ul className="text-gray-300 space-y-3 mb-12 list-disc list-inside inline-block text-left">
-            <li>Club-triggered recording</li>
-            <li>10-second swing capture</li>
-            <li>Instant looping playback</li>
-          </ul>
-
-          <div className="text-xl font-semibold text-white space-y-1">
+          <div className="text-2xl font-semibold tracking-tight space-y-2">
             <p>Swing.</p>
             <p>Loop.</p>
             <p>Repeat.</p>
           </div>
-
         </section>
 
       </div>
