@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(20,20,20,1)_0%,rgba(0,0,0,1)_60%)] text-white">
-      <div className="max-w-4xl mx-auto px-6 pt-40 pb-28 text-center">
+      <div className="max-w-4xl mx-auto px-6 pt-40 pb-54 text-center">
 
         {/* Hero */}
         <div className="text-center animate-fade-in">
@@ -78,14 +78,12 @@ export default function HomePage() {
         </section>
 
         {/* Emotional Close Section */}
-        <section className="max-w-3xl mx-auto text-center pt-24">
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-8">
+        <section className="max-w-3xl mx-auto text-center pt-16">
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-11">
             See it back instantly.
           </h2>
-          <p className="text-gray-400 text-lg leading-relaxed mb-12">
-            Every swing is captured and replayed immediately —
-            <br className="hidden md:block" />
-            while the feel is still fresh.
+            <p className="text-gray-400 text-lg leading-relaxed mb-12">
+            While the feel is still fresh.
           </p>
           <div className="text-2xl font-semibold tracking-tight space-y-2">
             <p>Swing.</p>
