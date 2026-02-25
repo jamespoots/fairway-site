@@ -1,3 +1,4 @@
+import { playfair } from "./layout";
 import Image from "next/image";
 
 export default function HomePage() {
@@ -18,10 +19,13 @@ export default function HomePage() {
         </div>
 
         {/* Hero */}
-        <h1 className="font-bold tracking-tight leading-[1.1] mb-14 max-w-3xl mx-auto">
-          <span className="block text-[clamp(2.2rem,5vw,4rem)]">
-            Know Your Swing.
-          </span>
+        <h1
+          className="text-5xl tracking-wide"
+          style={{ fontFamily: '"Times New Roman", Times, serif' }}
+        >
+          Fairway.
+          <br />
+          Know Your Swing.
         </h1>
 
         {/* Subtitle */}
@@ -45,13 +49,6 @@ export default function HomePage() {
               height={60}
               priority
             />
-          </a>
-
-          <a
-            href="#demo"
-            className="px-8 py-3 border border-gray-600 rounded-lg font-medium hover:bg-white/10 transition min-w-[180px]"
-          >
-            See It In Action
           </a>
         </div>
 
