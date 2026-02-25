@@ -33,10 +33,18 @@ export default function HomePage() {
         {/* CTA */}
         <div className="flex justify-center gap-4 mb-36 flex-wrap">
           <a
-            href="#"
-            className="px-8 py-3 bg-white text-black rounded-lg font-semibold hover:opacity-90 transition min-w-[180px]"
+            href="https://apps.apple.com/app/id0000000000"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block"
           >
-            Get Fairway
+            <Image
+              src="/app-store-badge.svg"
+              alt="Download on the App Store"
+              width={180}
+              height={60}
+              priority
+            />
           </a>
 
           <a
@@ -48,33 +56,35 @@ export default function HomePage() {
         </div>
 
         {/* Screenshots */}
-        <section className="flex flex-col items-center gap-16 mb-48">
+        <section className="mb-48 px-6">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
 
-          <Image
-            src="/app-store/v1.0/01_lift-club.png"
-            alt="Lift your club to start recording"
-            width={520}
-            height={1100}
-            className="rounded-3xl shadow-2xl border border-gray-800"
-            priority
-          />
+            <Image
+              src="/app-store/v1.0/01_lift-club.png"
+              alt="Lift your club to start recording"
+              width={380}
+              height={820}
+              className="rounded-3xl shadow-2xl border border-gray-800"
+              priority
+            />
 
-          <Image
-            src="/app-store/v1.0/02_no-timers.png"
-            alt="No timers. No tapping."
-            width={520}
-            height={1100}
-            className="rounded-3xl shadow-2xl border border-gray-800"
-          />
+            <Image
+              src="/app-store/v1.0/02_no-timers.png"
+              alt="No timers. No tapping."
+              width={380}
+              height={820}
+              className="rounded-3xl shadow-2xl border border-gray-800"
+            />
 
-          <Image
-            src="/app-store/v1.0/03_instant-replay.png"
-            alt="Instant replay. On loop."
-            width={520}
-            height={1100}
-            className="rounded-3xl shadow-2xl border border-gray-800"
-          />
+            <Image
+              src="/app-store/v1.0/03_instant-replay.png"
+              alt="Instant replay. On loop."
+              width={380}
+              height={820}
+              className="rounded-3xl shadow-2xl border border-gray-800"
+            />
 
+          </div>
         </section>
 
         {/* Features */}
