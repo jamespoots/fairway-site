@@ -1,4 +1,3 @@
-import { playfair } from "./layout";
 import Image from "next/image";
 
 export default function HomePage() {
@@ -6,33 +5,37 @@ export default function HomePage() {
     <main className="min-h-screen bg-black text-white">
       <div className="max-w-4xl mx-auto px-6 pt-36 pb-32 text-center">
 
-        {/* Logo */}
-        <div className="flex justify-center mb-12">
-          <Image
-            src="/icon.png"
-            alt="Fairway logo"
-            width={112}
-            height={112}
-            className="rounded-2xl shadow-2xl shadow-emerald-400/15"
-            priority
-          />
+        {/* Hero */}
+        <div className="text-center space-y-8">
+
+          <h1
+            className="text-[clamp(2.8rem,6vw,4.5rem)] tracking-tight leading-[1.1]"
+            style={{ fontFamily: '"Times New Roman", Times, serif' }}
+          >
+            Know your swing.
+          </h1>
+
+          <div className="flex flex-col items-center gap-6">
+
+            <Image
+              src="/logo_black.png"
+              alt="Fairway logo"
+              width={180}
+              height={180}
+              className="rounded-xl"
+            />
+
+            <span
+              className="text-[clamp(2.8rem,6vw,4.5rem)] tracking-tight leading-[1.1]"
+              style={{ fontFamily: '"Times New Roman", Times, serif' }}
+            >
+              Fairway
+            </span>
+
+          </div>
+
         </div>
 
-        {/* Hero */}
-        <h1
-          className="text-5xl tracking-wide"
-          style={{ fontFamily: '"Times New Roman", Times, serif' }}
-        >
-          Fairway.
-          <br />
-          Know Your Swing.
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-lg text-gray-200 mb-20 leading-relaxed max-w-2xl mx-auto">
-        {/* Old tag line:  Each swing is captured and instantly looped — while the feel is still fresh.*/}          
-        Lift your club. Record automatically. Instant replay.
-        </p>
 
         {/* CTA */}
         <div className="flex justify-center gap-4 mb-36 flex-wrap">
