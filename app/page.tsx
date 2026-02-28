@@ -30,7 +30,7 @@ export default function HomePage() {
         </div>
 
         {/* CTA */}
-        <div className="flex justify-center gap-4 mb-28 flex-wrap">
+        <div className="flex justify-center gap-4 mt-12 mb-28 flex-wrap">
           <a
             href="https://apps.apple.com/app/id0000000000"
             target="_blank"
