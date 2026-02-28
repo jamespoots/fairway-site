@@ -33,6 +33,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+          <footer className="border-t border-white/10 mt-16 py-8 text-center text-sm text-white/60">
+            <nav className="space-x-6">
+              <a href="/" className="hover:text-white transition">Home</a>
+              <a href="/support" className="hover:text-white transition">Support</a>
+              <a href="/privacy" className="hover:text-white transition">Privacy</a>
+            </nav>
+          </footer>
       </body>
     </html>
   );
