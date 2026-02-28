@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(20,20,20,1)_0%,rgba(0,0,0,1)_60%)] text-white">
+    <main className="min-h-screen">
       <div className="max-w-4xl mx-auto px-6 pt-40 pb-54 text-center">
 
         {/* Hero */}
@@ -91,6 +91,22 @@ export default function HomePage() {
             <p>Repeat.</p>
           </div>
         </section>
+
+          <section className="flex justify-center mt-32 mb-24">
+            <a
+              href="https://apps.apple.com/app/id0000000000"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block"
+            >
+              <Image
+                src="/app-store-badge.svg"
+                alt="Download on the App Store"
+                width={180}
+                height={60}
+              />
+            </a>
+          </section>
 
       </div>
     </main>
