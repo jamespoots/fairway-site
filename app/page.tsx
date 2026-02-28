@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function HomePage() {
   return (
     <main className="min-h-screen">
-      <div className="max-w-4xl mx-auto px-6 pt-40 pb-54 text-center">
+      <div className="max-w-4xl mx-auto px-6 pt-40 pb-14 text-center">
 
         {/* Hero */}
         <div className="text-center animate-fade-in">
@@ -92,7 +92,7 @@ export default function HomePage() {
           </div>
         </section>
 
-          <section className="flex justify-center mt-32 mb-24">
+          <section className="flex justify-center mt-32 mb-12">
             <a
               href="https://apps.apple.com/app/id0000000000"
               target="_blank"
