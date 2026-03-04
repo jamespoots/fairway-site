@@ -1,5 +1,6 @@
 
 import Image from "next/image";
+import { APP_STORE_URL } from "@/app/config/links";
 
 export default function HomePage() {
   return (
@@ -32,7 +33,7 @@ export default function HomePage() {
         {/* CTA */}
         <div className="flex justify-center gap-4 mt-12 mb-28 flex-wrap">
           <a
-            href="https://apps.apple.com/app/id0000000000"
+            href={APP_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block"
@@ -94,7 +95,7 @@ export default function HomePage() {
 
           <section className="flex justify-center mt-32 mb-12">
             <a
-              href="https://apps.apple.com/app/id0000000000"
+              href={APP_STORE_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block"
