@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -13,13 +14,33 @@ const geistMono = Geist_Mono({
 });
 
 
-export const metadata = {
+export const metadata: Metadata = {
   title: {
     default: "Fairway",
     template: "%s | Fairway",
   },
-  description:
-    "Fairway is a golf swing video capture app designed to help golfers record and review their swings.",
+  description: "Capture, replay, and share your golf swing instantly.",
+  metadataBase: new URL("https://fairway.cam"),
+  openGraph: {
+    title: "Fairway — Instant Golf Swing Replay",
+    description: "Capture, replay, and share your golf swing instantly.",
+    url: "https://fairway.cam",
+    siteName: "Fairway",
+    images: [
+      {
+        url: "/fairway-preview-meta.jpg",
+        alt: "Fairway golf swing replay preview",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Fairway — Instant Golf Swing Replay",
+    description: "Capture, replay, and share your golf swing instantly.",
+    images: ["/fairway-preview-meta.jpg"],
+  },
 };
 
 export default function RootLayout({
