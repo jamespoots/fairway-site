@@ -20,6 +20,7 @@ type HelperSummary = {
 };
 
 const REQUEST_TIMEOUT_MS = 2200;
+const STATUS_POLL_INTERVAL_MS = 2500;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -205,9 +206,12 @@ export default function ConnectPage() {
 
   useEffect(() => {
     let isActive = true;
+    let pollingId: number | null = null;
 
-    async function checkHelper(): Promise<void> {
-      setState("checking");
+    async function refreshHelper(showCheckingState: boolean): Promise<void> {
+      if (showCheckingState) {
+        setState("checking");
+      }
 
       try {
         const health = await fetchJsonWithTimeout(healthUrl, REQUEST_TIMEOUT_MS);
@@ -229,10 +233,17 @@ export default function ConnectPage() {
       }
     }
 
-    checkHelper();
+    void refreshHelper(true);
+
+    pollingId = window.setInterval(() => {
+      void refreshHelper(false);
+    }, STATUS_POLL_INTERVAL_MS);
 
     return () => {
       isActive = false;
+      if (pollingId !== null) {
+        window.clearInterval(pollingId);
+      }
     };
   }, [healthUrl, statusUrl]);
 
