@@ -13,6 +13,8 @@ type HelperSummary = {
   gsproConnectorState: string;
   pairingReadiness: string;
   gsproConnected: boolean;
+  gsproActive: boolean;
+  lastShotAt: string;
   pairingReady: boolean;
   sessionId: string;
 };
@@ -140,6 +142,11 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     typeof gspro?.state === "string" && gspro.state.trim().length > 0
       ? gspro.state
       : firstValue(status, ["connectors.gspro.state", "gspro.connector.state", "gspro.state"]);
+  const gsproActive =
+    typeof gspro?.active === "boolean"
+      ? gspro.active
+      : firstValue(status, ["connectors.gspro.active"]).toLowerCase() === "true";
+  const lastShotAt = firstValue(status, ["connectors.gspro.lastShotAt", "gspro.lastShotAt"]);
   const pairingReadiness =
     typeof pairing?.ready === "boolean"
       ? String(pairing.ready)
@@ -163,6 +170,8 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     gsproConnectorState,
     pairingReadiness,
     gsproConnected,
+    gsproActive,
+    lastShotAt,
     pairingReady,
     sessionId,
   };
@@ -181,6 +190,10 @@ export default function ConnectPage() {
 
     if (!summary.gsproConnected) {
       return "gspro-disconnected";
+    }
+
+    if (!summary.gsproActive) {
+      return "gspro-waiting-first-shot";
     }
 
     if (!summary.pairingReady) {
@@ -298,6 +311,31 @@ export default function ConnectPage() {
                         Once GSPro is connected, this page will advance automatically.
                       </p>
                     </div>
+                  </div>
+                )}
+
+                {stage === "gspro-waiting-first-shot" && (
+                  <div className="mt-3 space-y-5">
+                    <div>
+                      <h2 className="text-2xl font-semibold text-white">GSPro connected</h2>
+                      <p className="mt-3 max-w-2xl text-white/75">
+                        GSPro connected. Waiting for first shot.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-sky-300/25 bg-sky-300/10 p-5">
+                      <p className="text-sm uppercase tracking-[0.2em] text-sky-100/80">Status</p>
+                      <p className="mt-3 text-lg font-medium text-sky-50">
+                        The connector is online and will advance after the first shot is detected.
+                      </p>
+                    </div>
+
+                    <QrPlaceholderSection
+                      label="QR area"
+                      minHeightClassName="min-h-72"
+                      title="QR code coming soon"
+                      description="This reserved panel will display the production pairing QR when generation is enabled."
+                    />
                   </div>
                 )}
 
