@@ -71,22 +71,37 @@ function formatStartTime(raw: string): string {
   return parsed.toLocaleString();
 }
 
-function buildPairingPayload(sessionId: string): string | null {
-  if (sessionId.trim().length === 0 || sessionId === "Unavailable") {
-    return null;
+function isLoopbackHost(hostname: string): boolean {
+  const normalized = hostname.trim().toLowerCase();
+
+  return normalized === "localhost" || normalized === "127.0.0.1" || normalized === "::1";
+}
+
+function resolveDesktopHost(): string | null {
+  if (typeof window !== "undefined" && !isLoopbackHost(window.location.hostname)) {
+    return window.location.hostname;
   }
 
   try {
     const helperUrl = new URL(CONNECT_HELPER_BASE_URL);
 
-    return JSON.stringify({
-      type: "fairway-connect-pair",
-      sessionId,
-      helperUrl: `ws://${helperUrl.hostname}:30303`,
-    });
+    return isLoopbackHost(helperUrl.hostname) ? null : helperUrl.hostname;
   } catch {
     return null;
   }
+}
+
+function buildPairingPayload(sessionId: string, desktopHost: string | null): string | null {
+  if (sessionId.trim().length === 0 || sessionId === "Unavailable" || !desktopHost) {
+    return null;
+  }
+
+  return JSON.stringify({
+    type: "fairway-connect-pair",
+    sessionId,
+    helperHttpUrl: `http://${desktopHost}:30304`,
+    helperWsUrl: `ws://${desktopHost}:30303`,
+  });
 }
 
 function QrPanel({
@@ -230,13 +245,14 @@ export default function ConnectPage() {
 
     return "pairing-ready";
   }, [state, summary]);
+  const desktopHost = useMemo(() => resolveDesktopHost(), []);
   const pairingQrValue = useMemo(() => {
-    if (!summary?.pairingReady) {
+    if (state !== "found" || !summary?.gsproConnected) {
       return null;
     }
 
-    return buildPairingPayload(summary.sessionId);
-  }, [summary]);
+    return buildPairingPayload(summary.sessionId, desktopHost);
+  }, [desktopHost, state, summary]);
 
   useEffect(() => {
     let isActive = true;
