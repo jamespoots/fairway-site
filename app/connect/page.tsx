@@ -12,6 +12,8 @@ type HelperSummary = {
   runtimeStartTime: string;
   gsproConnectorState: string;
   pairingReadiness: string;
+  gsproConnected: boolean;
+  pairingReady: boolean;
   sessionId: string;
 };
 
@@ -116,6 +118,14 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     typeof pairing?.ready === "boolean"
       ? String(pairing.ready)
       : firstValue(status, ["pairing.readiness", "pairing.ready", "pairing.isReady", "ready"]);
+  const gsproConnected =
+    typeof gspro?.connected === "boolean"
+      ? gspro.connected
+      : gsproConnectorState.toLowerCase() === "connected";
+  const pairingReady =
+    typeof pairing?.ready === "boolean"
+      ? pairing.ready
+      : pairingReadiness.toLowerCase() === "true";
   const sessionId =
     typeof pairing?.sessionId === "string" && pairing.sessionId.trim().length > 0
       ? pairing.sessionId
@@ -126,6 +136,8 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     runtimeStartTime,
     gsproConnectorState,
     pairingReadiness,
+    gsproConnected,
+    pairingReady,
     sessionId,
   };
 }
@@ -136,6 +148,21 @@ export default function ConnectPage() {
 
   const healthUrl = useMemo(() => `${CONNECT_HELPER_BASE_URL}/health`, []);
   const statusUrl = useMemo(() => `${CONNECT_HELPER_BASE_URL}/status`, []);
+  const stage = useMemo(() => {
+    if (state !== "found" || !summary) {
+      return state;
+    }
+
+    if (!summary.gsproConnected) {
+      return "gspro-disconnected";
+    }
+
+    if (!summary.pairingReady) {
+      return "gspro-connected";
+    }
+
+    return "pairing-ready";
+  }, [state, summary]);
 
   useEffect(() => {
     let isActive = true;
@@ -221,33 +248,109 @@ export default function ConnectPage() {
           )}
 
           {state === "found" && summary && (
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-white/50">State</p>
-              <h2 className="mt-2 text-2xl font-semibold">Helper found</h2>
-              <p className="mt-2 text-emerald-300">Helper running</p>
+            <div className="space-y-8">
+              <div>
+                <p className="text-sm uppercase tracking-[0.2em] text-white/50">Connection status</p>
 
-              <dl className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="rounded-lg border border-white/10 bg-black/20 p-4">
-                  <dt className="text-xs uppercase tracking-wide text-white/50">API version</dt>
-                  <dd className="mt-1 text-base text-white">{summary.apiVersion}</dd>
-                </div>
-                <div className="rounded-lg border border-white/10 bg-black/20 p-4">
-                  <dt className="text-xs uppercase tracking-wide text-white/50">Runtime start time</dt>
-                  <dd className="mt-1 text-base text-white">{summary.runtimeStartTime}</dd>
-                </div>
-                <div className="rounded-lg border border-white/10 bg-black/20 p-4">
-                  <dt className="text-xs uppercase tracking-wide text-white/50">GSPro connector state</dt>
-                  <dd className="mt-1 text-base text-white">{summary.gsproConnectorState}</dd>
-                </div>
-                <div className="rounded-lg border border-white/10 bg-black/20 p-4">
-                  <dt className="text-xs uppercase tracking-wide text-white/50">Pairing readiness</dt>
-                  <dd className="mt-1 text-base text-white">{summary.pairingReadiness}</dd>
-                </div>
-                <div className="rounded-lg border border-white/10 bg-black/20 p-4 sm:col-span-2">
-                  <dt className="text-xs uppercase tracking-wide text-white/50">Session ID</dt>
-                  <dd className="mt-1 break-all text-base text-white">{summary.sessionId}</dd>
-                </div>
-              </dl>
+                {stage === "gspro-disconnected" && (
+                  <div className="mt-3 space-y-5">
+                    <div>
+                      <h2 className="text-2xl font-semibold text-white">Fairway Connect Helper is running</h2>
+                      <p className="mt-3 max-w-2xl text-white/75">
+                        Your desktop helper is online, but the GSPro connector is not connected yet.
+                        Open GSPro and make sure the Fairway Connect integration is connected before
+                        continuing.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-amber-400/25 bg-amber-300/10 p-5">
+                      <p className="text-sm uppercase tracking-[0.2em] text-amber-100/80">Next step</p>
+                      <p className="mt-3 text-lg font-medium text-amber-50">
+                        Open GSPro and connect the GSPro connector.
+                      </p>
+                      <p className="mt-2 text-sm text-amber-100/75">
+                        Once GSPro is connected, this page will advance automatically.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {stage === "gspro-connected" && (
+                  <div className="mt-3 space-y-5">
+                    <div>
+                      <h2 className="text-2xl font-semibold text-white">Helper connected to GSPro</h2>
+                      <p className="mt-3 max-w-2xl text-white/75">
+                        Your desktop helper is running and GSPro is connected. Fairway is preparing the
+                        phone pairing step.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-emerald-400/25 bg-emerald-300/10 p-5">
+                      <p className="text-sm uppercase tracking-[0.2em] text-emerald-100/80">Ready state</p>
+                      <p className="mt-3 text-lg font-medium text-emerald-50">
+                        Connection looks healthy. QR pairing will appear here when ready.
+                      </p>
+                    </div>
+
+                    <div className="flex min-h-72 items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/20 p-6 text-center">
+                      <div>
+                        <p className="text-sm uppercase tracking-[0.2em] text-white/45">QR area</p>
+                        <p className="mt-3 text-lg text-white/75">Reserved for the upcoming pairing code</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {stage === "pairing-ready" && (
+                  <div className="mt-3 space-y-5">
+                    <div>
+                      <h2 className="text-2xl font-semibold text-white">Ready to connect your iPhone</h2>
+                      <p className="mt-3 max-w-2xl text-white/75">
+                        Fairway Connect Helper and GSPro are ready. Fairway on iPhone can now scan to
+                        connect.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-emerald-300/30 bg-emerald-300/10 p-5">
+                      <p className="text-sm uppercase tracking-[0.2em] text-emerald-100/80">Pairing ready</p>
+                      <p className="mt-3 text-lg font-medium text-emerald-50">
+                        Fairway on iPhone can now scan to connect.
+                      </p>
+                    </div>
+
+                    <div className="flex min-h-80 items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                      <div>
+                        <p className="text-sm uppercase tracking-[0.2em] text-white/45">QR placeholder</p>
+                        <div className="mx-auto mt-5 flex h-48 w-48 items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/25">
+                          <span className="text-sm text-white/60">QR code coming soon</span>
+                        </div>
+                        <p className="mx-auto mt-5 max-w-sm text-sm text-white/65">
+                          This reserved panel will display the production pairing QR when generation is
+                          enabled.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/45">Helper details</p>
+                <dl className="mt-4 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
+                  <div>
+                    <dt className="text-white/45">API version</dt>
+                    <dd className="mt-1 text-white/80">{summary.apiVersion}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-white/45">Runtime start time</dt>
+                    <dd className="mt-1 text-white/80">{summary.runtimeStartTime}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-white/45">Session ID</dt>
+                    <dd className="mt-1 break-all text-white/80">{summary.sessionId}</dd>
+                  </div>
+                </dl>
+              </div>
             </div>
           )}
         </section>
