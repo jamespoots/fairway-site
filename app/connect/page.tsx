@@ -247,7 +247,7 @@ export default function ConnectPage() {
   }, [state, summary]);
   const desktopHost = useMemo(() => resolveDesktopHost(), []);
   const pairingQrValue = useMemo(() => {
-    if (state !== "found" || !summary?.gsproConnected) {
+    if (state !== "found" || !summary?.gsproConnected || !summary.pairingReady) {
       return null;
     }
 
