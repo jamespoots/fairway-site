@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
 import { CONNECT_HELPER_BASE_URL } from "@/app/config/connect";
 
 type ConnectState = "checking" | "not-found" | "found";
@@ -70,16 +71,36 @@ function formatStartTime(raw: string): string {
   return parsed.toLocaleString();
 }
 
-function QrPlaceholderSection({
+function buildPairingPayload(sessionId: string): string | null {
+  if (sessionId.trim().length === 0 || sessionId === "Unavailable") {
+    return null;
+  }
+
+  try {
+    const helperUrl = new URL(CONNECT_HELPER_BASE_URL);
+
+    return JSON.stringify({
+      type: "fairway-connect-pair",
+      sessionId,
+      helperUrl: `ws://${helperUrl.hostname}:30303`,
+    });
+  } catch {
+    return null;
+  }
+}
+
+function QrPanel({
   title,
   description,
   label = "QR placeholder",
   minHeightClassName,
+  qrValue,
 }: {
   title: string;
   description: string;
   label?: string;
   minHeightClassName: string;
+  qrValue?: string | null;
 }) {
   return (
     <div
@@ -87,9 +108,15 @@ function QrPlaceholderSection({
     >
       <div>
         <p className="text-sm uppercase tracking-[0.2em] text-white/45">{label}</p>
-        <div className="mx-auto mt-5 flex h-48 w-48 items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/25">
-          <span className="text-sm text-white/60">{title}</span>
-        </div>
+        {qrValue ? (
+          <div className="mx-auto mt-5 flex h-48 w-48 items-center justify-center rounded-2xl bg-white p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
+            <QRCodeSVG value={qrValue} size={168} bgColor="#ffffff" fgColor="#111111" includeMargin />
+          </div>
+        ) : (
+          <div className="mx-auto mt-5 flex h-48 w-48 items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/25">
+            <span className="text-sm text-white/60">{title}</span>
+          </div>
+        )}
         <p className="mx-auto mt-5 max-w-sm text-sm text-white/65">{description}</p>
       </div>
     </div>
@@ -203,6 +230,13 @@ export default function ConnectPage() {
 
     return "pairing-ready";
   }, [state, summary]);
+  const pairingQrValue = useMemo(() => {
+    if (!summary?.pairingReady) {
+      return null;
+    }
+
+    return buildPairingPayload(summary.sessionId);
+  }, [summary]);
 
   useEffect(() => {
     let isActive = true;
@@ -341,7 +375,7 @@ export default function ConnectPage() {
                       </p>
                     </div>
 
-                    <QrPlaceholderSection
+                    <QrPanel
                       label="QR area"
                       minHeightClassName="min-h-72"
                       title="QR code coming soon"
@@ -367,7 +401,7 @@ export default function ConnectPage() {
                       </p>
                     </div>
 
-                    <QrPlaceholderSection
+                    <QrPanel
                       label="QR area"
                       minHeightClassName="min-h-72"
                       title="QR code coming soon"
@@ -393,10 +427,15 @@ export default function ConnectPage() {
                       </p>
                     </div>
 
-                    <QrPlaceholderSection
+                    <QrPanel
                       minHeightClassName="min-h-80"
+                      qrValue={pairingQrValue}
                       title="QR code coming soon"
-                      description="This reserved panel will display the production pairing QR when generation is enabled."
+                      description={
+                        pairingQrValue
+                          ? "Scan with Fairway on iPhone to connect."
+                          : "This reserved panel will display the production pairing QR when generation is enabled."
+                      }
                     />
                   </div>
                 )}
