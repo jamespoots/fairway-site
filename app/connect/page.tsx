@@ -91,17 +91,23 @@ function resolveDesktopHost(): string | null {
   }
 }
 
-function buildPairingPayload(sessionId: string, desktopHost: string | null): string | null {
+function buildPairingConfig(sessionId: string, desktopHost: string | null) {
   if (sessionId.trim().length === 0 || sessionId === "Unavailable" || !desktopHost) {
     return null;
   }
 
-  return JSON.stringify({
+  return {
     type: "fairway-connect-pair",
     sessionId,
     helperHttpUrl: `http://${desktopHost}:30304`,
     helperWsUrl: `ws://${desktopHost}:30303`,
-  });
+  };
+}
+
+function buildPairingPayload(sessionId: string, desktopHost: string | null): string | null {
+  const pairingConfig = buildPairingConfig(sessionId, desktopHost);
+
+  return pairingConfig ? JSON.stringify(pairingConfig) : null;
 }
 
 function QrPanel({
@@ -246,6 +252,10 @@ export default function ConnectPage() {
     return "pairing-ready";
   }, [state, summary]);
   const desktopHost = useMemo(() => resolveDesktopHost(), []);
+  const pairingConfig = useMemo(
+    () => buildPairingConfig(summary?.sessionId ?? "", desktopHost),
+    [desktopHost, summary?.sessionId]
+  );
   const pairingQrValue = useMemo(() => {
     if (state !== "found" || !summary?.gsproConnected || !summary.pairingReady) {
       return null;
@@ -253,6 +263,10 @@ export default function ConnectPage() {
 
     return buildPairingPayload(summary.sessionId, desktopHost);
   }, [desktopHost, state, summary]);
+  const helperDetected = state === "found";
+  const qrPayloadAvailable = pairingQrValue !== null;
+  const shouldRenderQr = stage === "pairing-ready" && qrPayloadAvailable;
+  const isDev = process.env.NODE_ENV !== "production";
 
   useEffect(() => {
     let isActive = true;
@@ -453,6 +467,50 @@ export default function ConnectPage() {
                           : "This reserved panel will display the production pairing QR when generation is enabled."
                       }
                     />
+
+                    {isDev && (
+                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4 text-left text-xs text-white/65">
+                        <p className="uppercase tracking-[0.2em] text-white/40">QR debug</p>
+                        <dl className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          <div>
+                            <dt className="text-white/40">helperDetected</dt>
+                            <dd>{String(helperDetected)}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-white/40">gsproConnected</dt>
+                            <dd>{String(summary.gsproConnected)}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-white/40">pairingReady</dt>
+                            <dd>{String(summary.pairingReady)}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-white/40">sessionId</dt>
+                            <dd className="break-all">{summary.sessionId}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-white/40">desktopHost</dt>
+                            <dd>{desktopHost ?? "null"}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-white/40">helperHttpUrl</dt>
+                            <dd className="break-all">{pairingConfig?.helperHttpUrl ?? "null"}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-white/40">helperWsUrl</dt>
+                            <dd className="break-all">{pairingConfig?.helperWsUrl ?? "null"}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-white/40">qrPayloadAvailable</dt>
+                            <dd>{String(qrPayloadAvailable)}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-white/40">shouldRenderQr</dt>
+                            <dd>{String(shouldRenderQr)}</dd>
+                          </div>
+                        </dl>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
