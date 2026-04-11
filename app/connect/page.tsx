@@ -67,6 +67,32 @@ function formatStartTime(raw: string): string {
   return parsed.toLocaleString();
 }
 
+function QrPlaceholderSection({
+  title,
+  description,
+  label = "QR placeholder",
+  minHeightClassName,
+}: {
+  title: string;
+  description: string;
+  label?: string;
+  minHeightClassName: string;
+}) {
+  return (
+    <div
+      className={`flex ${minHeightClassName} items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`}
+    >
+      <div>
+        <p className="text-sm uppercase tracking-[0.2em] text-white/45">{label}</p>
+        <div className="mx-auto mt-5 flex h-48 w-48 items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/25">
+          <span className="text-sm text-white/60">{title}</span>
+        </div>
+        <p className="mx-auto mt-5 max-w-sm text-sm text-white/65">{description}</p>
+      </div>
+    </div>
+  );
+}
+
 async function fetchJsonWithTimeout(url: string, timeoutMs: number): Promise<unknown> {
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
@@ -129,7 +155,7 @@ function summarize(health: unknown, status: unknown): HelperSummary {
   const sessionId =
     typeof pairing?.sessionId === "string" && pairing.sessionId.trim().length > 0
       ? pairing.sessionId
-      : firstValue(status, ["sessionId", "session.id", "activeSessionId"]);
+      : firstValue(status, ["pairing.sessionId", "sessionId", "session.id", "activeSessionId"]);
 
   return {
     apiVersion,
@@ -292,12 +318,12 @@ export default function ConnectPage() {
                       </p>
                     </div>
 
-                    <div className="flex min-h-72 items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/20 p-6 text-center">
-                      <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-white/45">QR area</p>
-                        <p className="mt-3 text-lg text-white/75">Reserved for the upcoming pairing code</p>
-                      </div>
-                    </div>
+                    <QrPlaceholderSection
+                      label="QR area"
+                      minHeightClassName="min-h-72"
+                      title="QR code coming soon"
+                      description="This reserved panel will display the production pairing QR when generation is enabled."
+                    />
                   </div>
                 )}
 
@@ -318,18 +344,11 @@ export default function ConnectPage() {
                       </p>
                     </div>
 
-                    <div className="flex min-h-80 items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                      <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-white/45">QR placeholder</p>
-                        <div className="mx-auto mt-5 flex h-48 w-48 items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/25">
-                          <span className="text-sm text-white/60">QR code coming soon</span>
-                        </div>
-                        <p className="mx-auto mt-5 max-w-sm text-sm text-white/65">
-                          This reserved panel will display the production pairing QR when generation is
-                          enabled.
-                        </p>
-                      </div>
-                    </div>
+                    <QrPlaceholderSection
+                      minHeightClassName="min-h-80"
+                      title="QR code coming soon"
+                      description="This reserved panel will display the production pairing QR when generation is enabled."
+                    />
                   </div>
                 )}
               </div>
