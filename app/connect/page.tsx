@@ -87,9 +87,14 @@ async function fetchJsonWithTimeout(url: string, timeoutMs: number): Promise<unk
 }
 
 function summarize(health: unknown, status: unknown): HelperSummary {
-  const apiVersion = firstValue(health, ["apiVersion", "version", "api.version"]);
+  const apiVersion = firstValue(status, [
+    "apiVersion",
+    "api.version",
+    "version",
+  ]);
   const runtimeStartTime = formatStartTime(
     firstValue(status, [
+      "runtimeStartedAt",
       "runtime.startTime",
       "runtime.startedAt",
       "startedAt",
@@ -110,7 +115,12 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     "readyForPairing",
     "ready",
   ]);
-  const sessionId = firstValue(status, ["sessionId", "session.id", "activeSessionId"]);
+  const sessionId = firstValue(status, [
+    "pairing.sessionId",
+    "sessionId",
+    "session.id",
+    "activeSessionId",
+  ]);
 
   return {
     apiVersion,
