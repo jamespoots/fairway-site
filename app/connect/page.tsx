@@ -110,6 +110,18 @@ function buildPairingPayload(sessionId: string, desktopHost: string | null): str
   return pairingConfig ? JSON.stringify(pairingConfig) : null;
 }
 
+function formatDebugValue(value: string | boolean | null | undefined): string {
+  if (value === null) {
+    return "null";
+  }
+
+  if (value === undefined) {
+    return "undefined";
+  }
+
+  return String(value);
+}
+
 function QrPanel({
   title,
   description,
@@ -266,7 +278,6 @@ export default function ConnectPage() {
   const helperDetected = state === "found";
   const qrPayloadAvailable = pairingQrValue !== null;
   const shouldRenderQr = stage === "pairing-ready" && qrPayloadAvailable;
-  const isDev = process.env.NODE_ENV !== "production";
 
   useEffect(() => {
     let isActive = true;
@@ -468,49 +479,47 @@ export default function ConnectPage() {
                       }
                     />
 
-                    {isDev && (
-                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4 text-left text-xs text-white/65">
-                        <p className="uppercase tracking-[0.2em] text-white/40">QR debug</p>
-                        <dl className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                          <div>
-                            <dt className="text-white/40">helperDetected</dt>
-                            <dd>{String(helperDetected)}</dd>
-                          </div>
-                          <div>
-                            <dt className="text-white/40">gsproConnected</dt>
-                            <dd>{String(summary.gsproConnected)}</dd>
-                          </div>
-                          <div>
-                            <dt className="text-white/40">pairingReady</dt>
-                            <dd>{String(summary.pairingReady)}</dd>
-                          </div>
-                          <div>
-                            <dt className="text-white/40">sessionId</dt>
-                            <dd className="break-all">{summary.sessionId}</dd>
-                          </div>
-                          <div>
-                            <dt className="text-white/40">desktopHost</dt>
-                            <dd>{desktopHost ?? "null"}</dd>
-                          </div>
-                          <div>
-                            <dt className="text-white/40">helperHttpUrl</dt>
-                            <dd className="break-all">{pairingConfig?.helperHttpUrl ?? "null"}</dd>
-                          </div>
-                          <div>
-                            <dt className="text-white/40">helperWsUrl</dt>
-                            <dd className="break-all">{pairingConfig?.helperWsUrl ?? "null"}</dd>
-                          </div>
-                          <div>
-                            <dt className="text-white/40">qrPayloadAvailable</dt>
-                            <dd>{String(qrPayloadAvailable)}</dd>
-                          </div>
-                          <div>
-                            <dt className="text-white/40">shouldRenderQr</dt>
-                            <dd>{String(shouldRenderQr)}</dd>
-                          </div>
-                        </dl>
-                      </div>
-                    )}
+                    <div className="border border-white/10 bg-black/20 p-4 text-left text-xs text-white/65">
+                      <p>QR debug</p>
+                      <dl className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        <div>
+                          <dt className="text-white/40">helperDetected</dt>
+                          <dd>{formatDebugValue(helperDetected)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-white/40">gsproConnected</dt>
+                          <dd>{formatDebugValue(summary.gsproConnected)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-white/40">pairingReady</dt>
+                          <dd>{formatDebugValue(summary.pairingReady)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-white/40">sessionId</dt>
+                          <dd className="break-all">{formatDebugValue(summary.sessionId)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-white/40">desktopHost</dt>
+                          <dd>{formatDebugValue(desktopHost)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-white/40">helperHttpUrl</dt>
+                          <dd className="break-all">{formatDebugValue(pairingConfig?.helperHttpUrl)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-white/40">helperWsUrl</dt>
+                          <dd className="break-all">{formatDebugValue(pairingConfig?.helperWsUrl)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-white/40">qrPayloadAvailable</dt>
+                          <dd>{formatDebugValue(qrPayloadAvailable)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-white/40">shouldRenderQr</dt>
+                          <dd>{formatDebugValue(shouldRenderQr)}</dd>
+                        </div>
+                      </dl>
+                    </div>
                   </div>
                 )}
               </div>
