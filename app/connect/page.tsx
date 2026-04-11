@@ -87,40 +87,39 @@ async function fetchJsonWithTimeout(url: string, timeoutMs: number): Promise<unk
 }
 
 function summarize(health: unknown, status: unknown): HelperSummary {
-  const apiVersion = firstValue(status, [
-    "apiVersion",
-    "api.version",
-    "version",
-  ]);
+  const statusRecord = isRecord(status) ? status : null;
+  const connectors = isRecord(statusRecord?.connectors) ? statusRecord.connectors : null;
+  const gspro = isRecord(connectors?.gspro) ? connectors.gspro : null;
+  const pairing = isRecord(statusRecord?.pairing) ? statusRecord.pairing : null;
+
+  const apiVersion =
+    typeof statusRecord?.apiVersion === "string" && statusRecord.apiVersion.trim().length > 0
+      ? statusRecord.apiVersion
+      : firstValue(status, ["api.version", "version"]);
   const runtimeStartTime = formatStartTime(
-    firstValue(status, [
-      "runtimeStartedAt",
-      "runtime.startTime",
-      "runtime.startedAt",
-      "startedAt",
-      "startTime",
-      "uptime.startedAt",
-    ])
+    typeof statusRecord?.runtimeStartedAt === "string" &&
+      statusRecord.runtimeStartedAt.trim().length > 0
+      ? statusRecord.runtimeStartedAt
+      : firstValue(status, [
+          "runtime.startTime",
+          "runtime.startedAt",
+          "startedAt",
+          "startTime",
+          "uptime.startedAt",
+        ])
   );
-  const gsproConnectorState = firstValue(status, [
-    "gspro.connectorState",
-    "gspro.connector.state",
-    "connectors.gspro.state",
-    "gspro.state",
-  ]);
-  const pairingReadiness = firstValue(status, [
-    "pairing.readiness",
-    "pairing.ready",
-    "pairing.isReady",
-    "readyForPairing",
-    "ready",
-  ]);
-  const sessionId = firstValue(status, [
-    "pairing.sessionId",
-    "sessionId",
-    "session.id",
-    "activeSessionId",
-  ]);
+  const gsproConnectorState =
+    typeof gspro?.state === "string" && gspro.state.trim().length > 0
+      ? gspro.state
+      : firstValue(status, ["connectors.gspro.state", "gspro.connector.state", "gspro.state"]);
+  const pairingReadiness =
+    typeof pairing?.ready === "boolean"
+      ? String(pairing.ready)
+      : firstValue(status, ["pairing.readiness", "pairing.ready", "pairing.isReady", "ready"]);
+  const sessionId =
+    typeof pairing?.sessionId === "string" && pairing.sessionId.trim().length > 0
+      ? pairing.sessionId
+      : firstValue(status, ["sessionId", "session.id", "activeSessionId"]);
 
   return {
     apiVersion,
