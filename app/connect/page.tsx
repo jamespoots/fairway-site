@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { CONNECT_HELPER_BASE_URL } from "@/app/config/connect";
 
@@ -213,6 +213,74 @@ function getRenderedCopyForStage(stage: string) {
   }
 }
 
+type LadderStepStatus = "complete" | "active" | "locked";
+
+function StepCard({
+  stepNumber,
+  title,
+  copy,
+  status,
+  isLast,
+  children,
+}: {
+  stepNumber: number;
+  title: string;
+  copy: string;
+  status: LadderStepStatus;
+  isLast: boolean;
+  children?: ReactNode;
+}) {
+  const iconClassName =
+    status === "complete"
+      ? "border-emerald-300/40 bg-emerald-300/20 text-emerald-50"
+      : status === "active"
+        ? "border-sky-300/40 bg-sky-300/20 text-sky-50"
+        : "border-white/15 bg-black/20 text-white/45";
+  const lineClassName = status === "complete" ? "bg-emerald-200/30" : "bg-white/10";
+  const cardClassName =
+    status === "complete"
+      ? "border-emerald-300/20 bg-emerald-300/[0.08]"
+      : status === "active"
+        ? "border-sky-300/30 bg-sky-300/[0.08] shadow-[0_20px_50px_rgba(14,165,233,0.10)]"
+        : "border-white/10 bg-black/20";
+  const badgeClassName =
+    status === "complete"
+      ? "border border-emerald-300/30 bg-emerald-300/15 text-emerald-50"
+      : status === "active"
+        ? "border border-sky-300/30 bg-sky-300/15 text-sky-50"
+        : "border border-white/10 bg-white/[0.04] text-white/55";
+  const statusLabel = status === "complete" ? "Complete" : status === "active" ? "Current" : "Locked";
+
+  return (
+    <div className="flex gap-4">
+      <div className="flex w-8 flex-col items-center">
+        <div
+          className={`flex h-8 w-8 items-center justify-center rounded-full border text-sm font-semibold ${iconClassName}`}
+        >
+          {status === "complete" ? "✓" : stepNumber}
+        </div>
+        {!isLast && <div className={`mt-2 w-px flex-1 ${lineClassName}`} />}
+      </div>
+
+      <div className={`flex-1 rounded-2xl border p-5 ${cardClassName}`}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-white/45">Step {stepNumber}</p>
+            <h2 className="mt-2 text-2xl font-semibold text-white">{title}</h2>
+            <p className="mt-3 max-w-2xl text-white/72">{copy}</p>
+          </div>
+
+          <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${badgeClassName}`}>
+            {statusLabel}
+          </span>
+        </div>
+
+        {children ? <div className="mt-5">{children}</div> : null}
+      </div>
+    </div>
+  );
+}
+
 function QrPanel({
   title,
   description,
@@ -403,6 +471,36 @@ export default function ConnectPage() {
   const helperDetected = state === "found";
   const qrPayloadAvailable = pairingQrValue !== null;
   const shouldRenderQr = stage === "pairing-ready" && qrPayloadAvailable;
+  const helperRunning = state === "found";
+  const gsproShotFeedVerified = summary?.gsproActive === true;
+  const iphoneConnected = summary?.phoneJoined === true;
+  const replayReceived = stage === "replay-ready";
+  const currentStepIndex = !helperRunning
+    ? 0
+    : !gsproShotFeedVerified
+      ? 1
+      : !iphoneConnected
+        ? 2
+        : !replayReceived
+          ? 3
+          : 4;
+  const helperStepCopy =
+    helperRunning && summary
+      ? "Fairway Connect helper is running"
+      : "Start Fairway Connect on your desktop.";
+  const gsproStepCopy =
+    gsproShotFeedVerified
+      ? "GSPro shot feed verified"
+      : "Open GSPro and take one shot to confirm the feed.";
+  const iphoneStepCopy = iphoneConnected
+    ? "iPhone connected"
+    : "Scan this QR code with Fairway on iPhone.";
+  const replayStepCopy = replayReceived
+    ? "First replay received"
+    : "Take a shot with Fairway recording on iPhone.";
+  const dashboardStepCopy = replayReceived
+    ? "Open Fairway Connect dashboard to view replay."
+    : "Open Fairway Connect dashboard to view replay.";
 
   useEffect(() => {
     const renderedCopy = getRenderedCopyForStage(stage);
@@ -583,134 +681,71 @@ export default function ConnectPage() {
         </header>
 
         <section className="rounded-2xl border border-white/15 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-          {state === "checking" && (
+          <div className="space-y-8">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-white/50">State</p>
-              <h2 className="mt-2 text-2xl font-semibold">Checking for helper</h2>
-              <p className="mt-3 text-white/70">
-                Attempting to reach your local helper at {CONNECT_HELPER_BASE_URL}.
-              </p>
-            </div>
-          )}
+              <p className="text-sm uppercase tracking-[0.2em] text-white/50">Setup flow</p>
+              <div className="mt-4 space-y-4">
+                <StepCard
+                  stepNumber={1}
+                  title="Helper running"
+                  copy={helperStepCopy}
+                  status={currentStepIndex === 0 ? "active" : helperRunning ? "complete" : "locked"}
+                  isLast={false}
+                >
+                  {currentStepIndex === 0 ? (
+                    <div className="space-y-4">
+                      {state === "checking" && (
+                        <p className="text-sm text-white/65">
+                          Checking for your helper at {CONNECT_HELPER_BASE_URL}.
+                        </p>
+                      )}
 
-          {state === "not-found" && (
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-white/50">State</p>
-              <h2 className="mt-2 text-2xl font-semibold">Helper not found</h2>
-              <p className="mt-3 text-white/80">
-                Fairway Connect requires a small desktop helper running locally before
-                pairing can begin.
-              </p>
+                      {state === "not-found" && (
+                        <div className="space-y-4">
+                          <button
+                            type="button"
+                            className="rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15"
+                          >
+                            Download Helper (Coming Soon)
+                          </button>
 
-              <button
-                type="button"
-                className="mt-6 rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15"
-              >
-                Download Helper (Coming Soon)
-              </button>
+                          <ol className="list-decimal space-y-2 pl-5 text-white/72">
+                            <li>Download the helper</li>
+                            <li>Open the helper on desktop</li>
+                            <li>Return to this page</li>
+                          </ol>
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
+                </StepCard>
 
-              <ol className="mt-6 list-decimal space-y-2 pl-5 text-white/75">
-                <li>Download the helper</li>
-                <li>Open the helper on desktop</li>
-                <li>Return to this page</li>
-              </ol>
-            </div>
-          )}
-
-          {state === "found" && summary && (
-            <div className="space-y-8">
-              <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-white/50">Connection status</p>
-
-                {stage === "gspro-disconnected" && (
-                  <div className="mt-3 space-y-5">
-                    <div>
-                      <h2 className="text-2xl font-semibold text-white">Fairway Connect Helper is running</h2>
-                      <p className="mt-3 max-w-2xl text-white/75">
-                        Your desktop helper is online, but the GSPro connector is not connected yet.
-                        Open GSPro and make sure the Fairway Connect integration is connected before
-                        continuing.
+                <StepCard
+                  stepNumber={2}
+                  title="Verify GSPro shot feed"
+                  copy={gsproStepCopy}
+                  status={currentStepIndex === 1 ? "active" : gsproShotFeedVerified ? "complete" : "locked"}
+                  isLast={false}
+                >
+                  {currentStepIndex === 1 ? (
+                    <div className="rounded-2xl border border-sky-300/25 bg-sky-300/10 p-4">
+                      <p className="text-sm font-medium text-sky-50">
+                        {stage === "gspro-waiting-first-shot"
+                          ? "Take one shot in GSPro to confirm connection."
+                          : "Open GSPro and take one shot to confirm the feed."}
                       </p>
                     </div>
+                  ) : null}
+                </StepCard>
 
-                    <div className="rounded-2xl border border-amber-400/25 bg-amber-300/10 p-5">
-                      <p className="text-sm uppercase tracking-[0.2em] text-amber-100/80">Next step</p>
-                      <p className="mt-3 text-lg font-medium text-amber-50">
-                        Open GSPro and connect the GSPro connector.
-                      </p>
-                      <p className="mt-2 text-sm text-amber-100/75">
-                        Once GSPro is connected, this page will advance automatically.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {stage === "gspro-waiting-first-shot" && (
-                  <div className="mt-3 space-y-5">
-                    <div>
-                      <h2 className="text-2xl font-semibold text-white">Helper is running</h2>
-                      <p className="mt-3 max-w-2xl text-white/75">Waiting to verify GSPro shot feed</p>
-                    </div>
-
-                    <div className="rounded-2xl border border-sky-300/25 bg-sky-300/10 p-5">
-                      <p className="text-sm uppercase tracking-[0.2em] text-sky-100/80">Status</p>
-                      <p className="mt-3 text-lg font-medium text-sky-50">
-                        Take one shot in GSPro to confirm connection
-                      </p>
-                    </div>
-
-                    <QrPanel
-                      label="QR area"
-                      minHeightClassName="min-h-72"
-                      title="QR code coming soon"
-                      description="This reserved panel will display the production pairing QR when generation is enabled."
-                    />
-                  </div>
-                )}
-
-                {stage === "gspro-connected" && (
-                  <div className="mt-3 space-y-5">
-                    <div>
-                      <h2 className="text-2xl font-semibold text-white">Helper connected to GSPro</h2>
-                      <p className="mt-3 max-w-2xl text-white/75">
-                        Your desktop helper is running and GSPro is connected. Fairway is preparing the
-                        phone pairing step.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl border border-emerald-400/25 bg-emerald-300/10 p-5">
-                      <p className="text-sm uppercase tracking-[0.2em] text-emerald-100/80">Ready state</p>
-                      <p className="mt-3 text-lg font-medium text-emerald-50">
-                        Connection looks healthy. QR pairing will appear here when ready.
-                      </p>
-                    </div>
-
-                    <QrPanel
-                      label="QR area"
-                      minHeightClassName="min-h-72"
-                      title="QR code coming soon"
-                      description="This reserved panel will display the production pairing QR when generation is enabled."
-                    />
-                  </div>
-                )}
-
-                {stage === "pairing-ready" && (
-                  <div className="mt-3 space-y-5">
-                    <div>
-                      <h2 className="text-2xl font-semibold text-white">Ready to connect your iPhone</h2>
-                      <p className="mt-3 max-w-2xl text-white/75">
-                        Fairway Connect Helper and GSPro are ready. Fairway on iPhone can now scan to
-                        connect.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl border border-emerald-300/30 bg-emerald-300/10 p-5">
-                      <p className="text-sm uppercase tracking-[0.2em] text-emerald-100/80">Pairing ready</p>
-                      <p className="mt-3 text-lg font-medium text-emerald-50">
-                        Fairway on iPhone can now scan to connect.
-                      </p>
-                    </div>
-
+                <StepCard
+                  stepNumber={3}
+                  title="Connect your iPhone"
+                  copy={iphoneStepCopy}
+                  status={currentStepIndex === 2 ? "active" : iphoneConnected ? "complete" : "locked"}
+                  isLast={false}
+                >
+                  {currentStepIndex === 2 ? (
                     <QrPanel
                       minHeightClassName="min-h-80"
                       qrValue={pairingQrValue}
@@ -721,64 +756,56 @@ export default function ConnectPage() {
                           : "This reserved panel will display the production pairing QR when generation is enabled."
                       }
                     />
-                  </div>
-                )}
+                  ) : null}
+                </StepCard>
 
-                {stage === "phone-joined" && (
-                  <div className="mt-3 space-y-5">
-                    <div>
-                      <h2 className="text-2xl font-semibold text-white">iPhone connected</h2>
-                      <p className="mt-3 max-w-2xl text-white/75">
-                        Fairway on iPhone has joined this pairing session successfully.
+                <StepCard
+                  stepNumber={4}
+                  title="Send first replay"
+                  copy={replayStepCopy}
+                  status={currentStepIndex === 3 ? "active" : replayReceived ? "complete" : "locked"}
+                  isLast={false}
+                >
+                  {currentStepIndex === 3 ? (
+                    <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+                      <p className="text-sm text-white/70">
+                        {iphoneConnected
+                          ? "Fairway on iPhone is connected. Take a recorded shot to send the first replay."
+                          : "This step will unlock after your iPhone connects."}
                       </p>
                     </div>
+                  ) : null}
+                </StepCard>
 
-                    <div className="flex min-h-80 items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                      <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-white/45">Paired state</p>
-                        <p className="mt-5 text-2xl font-semibold text-white">iPhone connected</p>
-                        <p className="mx-auto mt-4 max-w-sm text-white/70">
-                          Waiting for first replay.
-                        </p>
-                      </div>
+                <StepCard
+                  stepNumber={5}
+                  title="Review in dashboard"
+                  copy={dashboardStepCopy}
+                  status={currentStepIndex === 4 ? "active" : "locked"}
+                  isLast={true}
+                >
+                  {currentStepIndex === 4 ? (
+                    <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+                      <p className="text-sm text-white/70">Dashboard ready</p>
+                      {helperDashboardUrl && (
+                        <a
+                          href={helperDashboardUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 inline-flex rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/15"
+                        >
+                          Open Fairway Connect dashboard
+                        </a>
+                      )}
                     </div>
-                  </div>
-                )}
-
-                {stage === "replay-ready" && (
-                  <div className="mt-3 space-y-5">
-                    <div>
-                      <h2 className="text-2xl font-semibold text-white">Replay ready on desktop</h2>
-                      <p className="mt-3 max-w-2xl text-white/75">
-                        Fairway on iPhone is connected and the first replay is ready in the Fairway
-                        Connect dashboard.
-                      </p>
-                    </div>
-
-                    <div className="flex min-h-80 items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                      <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-white/45">Replay ready</p>
-                        <p className="mt-5 text-2xl font-semibold text-white">Replay ready on desktop</p>
-                        <p className="mx-auto mt-4 max-w-sm text-white/70">
-                          Open Fairway Connect dashboard.
-                        </p>
-                        {helperDashboardUrl && (
-                          <a
-                            href={helperDashboardUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-6 inline-flex rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/15"
-                          >
-                            Open Fairway Connect dashboard
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  ) : null}
+                </StepCard>
               </div>
+            </div>
 
-              <div className="border border-white/10 bg-black/20 p-4 text-left text-xs text-white/65">
+            {state === "found" && summary && (
+              <>
+                <div className="border border-white/10 bg-black/20 p-4 text-left text-xs text-white/65">
                 <p>QR debug</p>
                 <dl className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <div>
@@ -818,61 +845,62 @@ export default function ConnectPage() {
                     <dd>{formatDebugValue(shouldRenderQr)}</dd>
                   </div>
                 </dl>
-              </div>
+                </div>
 
-              <div className="rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-left text-sm text-amber-50">
-                <p className="text-xs uppercase tracking-[0.2em] text-amber-100/80">DEBUG CONNECT STATE</p>
-                <dl className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <div>
-                    <dt className="text-amber-100/60">helperDetected</dt>
-                    <dd>{formatDebugValue(helperDetected)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-amber-100/60">raw helper state</dt>
-                    <dd>{state}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-amber-100/60">gsproAvailable</dt>
-                    <dd>{formatDebugValue(summary.gsproAvailable)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-amber-100/60">gsproConnected</dt>
-                    <dd>{formatDebugValue(summary.gsproConnected)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-amber-100/60">gsproActive</dt>
-                    <dd>{formatDebugValue(summary.gsproActive)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-amber-100/60">shotFeedConnected</dt>
-                    <dd>{formatDebugValue(summary.shotFeedConnected)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-amber-100/60">selectedStage</dt>
-                    <dd>{stage}</dd>
-                  </div>
-                </dl>
-              </div>
+                <div className="rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-left text-sm text-amber-50">
+                  <p className="text-xs uppercase tracking-[0.2em] text-amber-100/80">DEBUG CONNECT STATE</p>
+                  <dl className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <div>
+                      <dt className="text-amber-100/60">helperDetected</dt>
+                      <dd>{formatDebugValue(helperDetected)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-amber-100/60">raw helper state</dt>
+                      <dd>{state}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-amber-100/60">gsproAvailable</dt>
+                      <dd>{formatDebugValue(summary.gsproAvailable)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-amber-100/60">gsproConnected</dt>
+                      <dd>{formatDebugValue(summary.gsproConnected)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-amber-100/60">gsproActive</dt>
+                      <dd>{formatDebugValue(summary.gsproActive)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-amber-100/60">shotFeedConnected</dt>
+                      <dd>{formatDebugValue(summary.shotFeedConnected)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-amber-100/60">selectedStage</dt>
+                      <dd>{stage}</dd>
+                    </div>
+                  </dl>
+                </div>
 
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-                <p className="text-xs uppercase tracking-[0.2em] text-white/45">Helper details</p>
-                <dl className="mt-4 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
-                  <div>
-                    <dt className="text-white/45">API version</dt>
-                    <dd className="mt-1 text-white/80">{summary.apiVersion}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-white/45">Runtime start time</dt>
-                    <dd className="mt-1 text-white/80">{summary.runtimeStartTime}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-white/45">Session ID</dt>
-                    <dd className="mt-1 break-all text-white/80">{summary.sessionId}</dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
-          )}
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/45">Helper details</p>
+                  <dl className="mt-4 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
+                    <div>
+                      <dt className="text-white/45">API version</dt>
+                      <dd className="mt-1 text-white/80">{summary.apiVersion}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-white/45">Runtime start time</dt>
+                      <dd className="mt-1 text-white/80">{summary.runtimeStartTime}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-white/45">Session ID</dt>
+                      <dd className="mt-1 break-all text-white/80">{summary.sessionId}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </>
+            )}
+          </div>
         </section>
       </div>
     </main>
