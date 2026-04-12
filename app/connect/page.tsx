@@ -489,7 +489,7 @@ export default function ConnectPage() {
   const helperStepCopy =
     helperRunning && summary
       ? "Fairway Connect helper is running"
-      : "Start Fairway Connect on your desktop.";
+      : undefined;
   const helperStepTitle = helperRunning ? "Helper running" : "Start Fairway Connect";
   const gsproStepTitle = gsproShotFeedVerified
     ? "Verify GSPro shot feed"
@@ -708,7 +708,7 @@ export default function ConnectPage() {
                     <div className="space-y-4">
                       {state === "checking" && (
                         <p className="text-sm text-white/65">
-                          Checking for your helper at {CONNECT_HELPER_BASE_URL}.
+                          Checking for Fairway Connect at {CONNECT_HELPER_BASE_URL}.
                         </p>
                       )}
 
