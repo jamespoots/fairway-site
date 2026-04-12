@@ -17,6 +17,7 @@ type HelperSummary = {
   gsproActive: boolean;
   lastShotAt: string;
   pairingReady: boolean;
+  phoneJoined: boolean;
   sessionId: string;
 };
 
@@ -234,6 +235,7 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     gsproActive,
     lastShotAt,
     pairingReady,
+    phoneJoined: false,
     sessionId,
   };
 }
@@ -259,6 +261,10 @@ export default function ConnectPage() {
 
     if (!summary.pairingReady) {
       return "gspro-connected";
+    }
+
+    if (summary.phoneJoined) {
+      return "phone-joined";
     }
 
     return "pairing-ready";
@@ -296,7 +302,24 @@ export default function ConnectPage() {
           return;
         }
 
-        setSummary(summarize(health, status));
+        const nextSummary = summarize(health, status);
+
+        if (nextSummary.sessionId !== "Unavailable") {
+          try {
+            const latestReplay = await fetchJsonWithTimeout(
+              `${CONNECT_HELPER_BASE_URL}/api/sessions/${encodeURIComponent(nextSummary.sessionId)}/latest-replay`,
+              REQUEST_TIMEOUT_MS
+            );
+
+            if (isActive && isRecord(latestReplay) && typeof latestReplay.phoneJoined === "boolean") {
+              nextSummary.phoneJoined = latestReplay.phoneJoined;
+            }
+          } catch {
+            nextSummary.phoneJoined = false;
+          }
+        }
+
+        setSummary(nextSummary);
         setState("found");
       } catch {
         if (!isActive) {
@@ -477,6 +500,31 @@ export default function ConnectPage() {
                           ? "Scan with Fairway on iPhone to connect."
                           : "This reserved panel will display the production pairing QR when generation is enabled."
                       }
+                    />
+                  </div>
+                )}
+
+                {stage === "phone-joined" && (
+                  <div className="mt-3 space-y-5">
+                    <div>
+                      <h2 className="text-2xl font-semibold text-white">iPhone connected</h2>
+                      <p className="mt-3 max-w-2xl text-white/75">
+                        Fairway on iPhone has joined this pairing session successfully.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-emerald-300/30 bg-emerald-300/10 p-5">
+                      <p className="text-sm uppercase tracking-[0.2em] text-emerald-100/80">Connected</p>
+                      <p className="mt-3 text-lg font-medium text-emerald-50">
+                        Phone pairing acknowledged by the helper.
+                      </p>
+                    </div>
+
+                    <QrPanel
+                      minHeightClassName="min-h-80"
+                      qrValue={pairingQrValue}
+                      title="QR code coming soon"
+                      description="Scan with Fairway on iPhone to connect."
                     />
                   </div>
                 )}
