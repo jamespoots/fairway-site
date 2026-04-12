@@ -513,13 +513,6 @@ export default function ConnectPage() {
                       </p>
                     </div>
 
-                    <div className="rounded-2xl border border-emerald-300/30 bg-emerald-300/10 p-5">
-                      <p className="text-sm uppercase tracking-[0.2em] text-emerald-100/80">Connected</p>
-                      <p className="mt-3 text-lg font-medium text-emerald-50">
-                        Phone pairing acknowledged by the helper.
-                      </p>
-                    </div>
-
                     <div className="flex min-h-80 items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                       <div>
                         <p className="text-sm uppercase tracking-[0.2em] text-white/45">Paired state</p>
