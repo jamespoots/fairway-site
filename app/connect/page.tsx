@@ -247,6 +247,7 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     typeof pairing?.ready === "boolean"
       ? String(pairing.ready)
       : firstValue(status, ["pairing.readiness", "pairing.ready", "pairing.isReady", "ready"]);
+  // Trust the helper's explicit GSPro boolean and fail closed when it is missing.
   const gsproConnected =
     typeof gspro?.connected === "boolean"
       ? gspro.connected
