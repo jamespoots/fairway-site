@@ -718,12 +718,12 @@ export default function ConnectPage() {
                             type="button"
                             className="rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15"
                           >
-                            Download Helper (Coming Soon)
+                            Download (Coming Soon)
                           </button>
 
                           <ol className="list-decimal space-y-2 pl-5 text-white/72">
-                            <li>Download the helper</li>
-                            <li>Open the helper on desktop</li>
+                            <li>Download Fairway Connect</li>
+                            <li>Open Fairway Connect on your computer</li>
                             <li>Return to this page</li>
                           </ol>
                         </div>
