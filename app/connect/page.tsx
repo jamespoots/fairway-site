@@ -182,8 +182,8 @@ function getRenderedCopyForStage(stage: string) {
       };
     case "gspro-waiting-first-shot":
       return {
-        title: "GSPro connected",
-        body: "GSPro connected. Waiting for first shot.",
+        title: "Helper is running",
+        body: "Waiting to verify GSPro shot feed",
       };
     case "gspro-connected":
       return {
@@ -648,16 +648,14 @@ export default function ConnectPage() {
                 {stage === "gspro-waiting-first-shot" && (
                   <div className="mt-3 space-y-5">
                     <div>
-                      <h2 className="text-2xl font-semibold text-white">GSPro connected</h2>
-                      <p className="mt-3 max-w-2xl text-white/75">
-                        GSPro connected. Waiting for first shot.
-                      </p>
+                      <h2 className="text-2xl font-semibold text-white">Helper is running</h2>
+                      <p className="mt-3 max-w-2xl text-white/75">Waiting to verify GSPro shot feed</p>
                     </div>
 
                     <div className="rounded-2xl border border-sky-300/25 bg-sky-300/10 p-5">
                       <p className="text-sm uppercase tracking-[0.2em] text-sky-100/80">Status</p>
                       <p className="mt-3 text-lg font-medium text-sky-50">
-                        The connector is online and will advance after the first shot is detected.
+                        Take one shot in GSPro to confirm connection
                       </p>
                     </div>
 
