@@ -494,9 +494,12 @@ export default function ConnectPage() {
   const gsproStepCopy = undefined;
   const iphoneStepTitle = iphoneConnected ? "iPhone connected" : "Connect your iPhone";
   const iphoneStepCopy = undefined;
+  const replayStepTitle = replayReceived
+    ? "Send first replay"
+    : "Record a shot with Fairway on your iPhone";
   const replayStepCopy = replayReceived
     ? "First replay received"
-    : "Take a shot with Fairway recording on iPhone.";
+    : undefined;
 
   useEffect(() => {
     const renderedCopy = getRenderedCopyForStage(stage);
@@ -751,23 +754,11 @@ export default function ConnectPage() {
 
                 <StepCard
                   stepNumber={4}
-                  title="Send first replay"
+                  title={replayStepTitle}
                   copy={replayStepCopy}
                   status={currentStepIndex === 3 ? "active" : replayReceived ? "complete" : "locked"}
                   isLast={true}
-                >
-                  {currentStepIndex === 3 ? (
-                    <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-4">
-                      <p className="text-sm text-white/70">
-                        {replayReceived
-                          ? "Replay received. Redirecting to the Fairway Connect dashboard."
-                          : iphoneConnected
-                            ? "Fairway on iPhone is connected. Take a recorded shot to send the first replay."
-                            : "This step will unlock after your iPhone connects."}
-                      </p>
-                    </div>
-                  ) : null}
-                </StepCard>
+                />
               </div>
             </div>
 
