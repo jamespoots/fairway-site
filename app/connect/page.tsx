@@ -254,7 +254,7 @@ function summarize(health: unknown, status: unknown): HelperSummary {
   const gsproConnected =
     typeof gspro?.connected === "boolean"
       ? gspro.connected
-      : gsproConnectorState.toLowerCase() === "connected";
+      : false;
   const pairingReady =
     typeof pairing?.ready === "boolean"
       ? pairing.ready
