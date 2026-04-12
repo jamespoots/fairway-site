@@ -230,6 +230,7 @@ function StepCard({
   isLast: boolean;
   children?: ReactNode;
 }) {
+  const isCompact = status !== "active";
   const iconClassName =
     status === "complete"
       ? "border-emerald-300/40 bg-emerald-300/20 text-emerald-50"
@@ -239,10 +240,10 @@ function StepCard({
   const lineClassName = status === "complete" ? "bg-emerald-200/30" : "bg-white/10";
   const cardClassName =
     status === "complete"
-      ? "border-emerald-300/20 bg-emerald-300/[0.08]"
+      ? "border-emerald-300/20 bg-emerald-300/[0.06]"
       : status === "active"
-        ? "border-sky-300/30 bg-sky-300/[0.08] shadow-[0_20px_50px_rgba(14,165,233,0.10)]"
-        : "border-white/10 bg-black/20";
+        ? "border-sky-300/30 bg-sky-300/[0.08] shadow-[0_16px_40px_rgba(14,165,233,0.10)]"
+        : "border-white/10 bg-black/15";
   const badgeClassName =
     status === "complete"
       ? "border border-emerald-300/30 bg-emerald-300/15 text-emerald-50"
@@ -252,30 +253,32 @@ function StepCard({
   const statusLabel = status === "complete" ? "Complete" : status === "active" ? "Current" : "Locked";
 
   return (
-    <div className="flex gap-4">
-      <div className="flex w-8 flex-col items-center">
+    <div className="flex gap-3">
+      <div className="flex w-7 flex-col items-center">
         <div
-          className={`flex h-8 w-8 items-center justify-center rounded-full border text-sm font-semibold ${iconClassName}`}
+          className={`flex h-7 w-7 items-center justify-center rounded-full border text-xs font-semibold ${iconClassName}`}
         >
           {status === "complete" ? "✓" : stepNumber}
         </div>
-        {!isLast && <div className={`mt-2 w-px flex-1 ${lineClassName}`} />}
+        {!isLast && <div className={`mt-1.5 w-px flex-1 ${lineClassName}`} />}
       </div>
 
-      <div className={`flex-1 rounded-2xl border p-5 ${cardClassName}`}>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className={`flex-1 rounded-2xl border ${isCompact ? "px-4 py-3.5" : "p-4 sm:p-5"} ${cardClassName}`}>
+        <div className={`flex flex-col ${isCompact ? "gap-2 sm:flex-row sm:items-center sm:justify-between" : "gap-3 sm:flex-row sm:items-start sm:justify-between"}`}>
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-white/45">Step {stepNumber}</p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">{title}</h2>
-            {copy ? <p className="mt-3 max-w-2xl text-white/72">{copy}</p> : null}
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/45">Step {stepNumber}</p>
+            <h2 className={`text-white ${isCompact ? "mt-1 text-lg font-medium" : "mt-1.5 text-xl font-semibold sm:text-2xl"}`}>{title}</h2>
+            {copy ? (
+              <p className={`max-w-2xl text-white/72 ${isCompact ? "mt-1 text-sm" : "mt-2.5 text-sm"}`}>{copy}</p>
+            ) : null}
           </div>
 
-          <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${badgeClassName}`}>
+          <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium ${badgeClassName}`}>
             {statusLabel}
           </span>
         </div>
 
-        {children ? <div className="mt-5">{children}</div> : null}
+        {children ? <div className={isCompact ? "mt-3" : "mt-4"}>{children}</div> : null}
       </div>
     </div>
   );
@@ -296,20 +299,20 @@ function QrPanel({
 }) {
   return (
     <div
-      className={`flex ${minHeightClassName} items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`}
+      className={`flex ${minHeightClassName} items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`}
     >
       <div>
         {label ? <p className="text-sm uppercase tracking-[0.2em] text-white/45">{label}</p> : null}
         {qrValue ? (
-          <div className="mx-auto mt-5 flex h-48 w-48 items-center justify-center rounded-2xl bg-white p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
-            <QRCodeSVG value={qrValue} size={168} bgColor="#ffffff" fgColor="#111111" includeMargin />
+          <div className="mx-auto mt-3 flex h-44 w-44 items-center justify-center rounded-2xl bg-white p-3 shadow-[0_10px_24px_rgba(0,0,0,0.24)]">
+            <QRCodeSVG value={qrValue} size={152} bgColor="#ffffff" fgColor="#111111" includeMargin />
           </div>
         ) : (
-          <div className="mx-auto mt-5 flex h-48 w-48 items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/25">
+          <div className="mx-auto mt-3 flex h-44 w-44 items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/25">
             <span className="text-sm text-white/60">{title}</span>
           </div>
         )}
-        {description ? <p className="mx-auto mt-5 max-w-sm text-sm text-white/65">{description}</p> : null}
+        {description ? <p className="mx-auto mt-4 max-w-sm text-sm text-white/65">{description}</p> : null}
       </div>
     </div>
   );
@@ -672,9 +675,9 @@ export default function ConnectPage() {
   }, [healthUrl, statusUrl]);
 
   return (
-    <main className="min-h-screen px-6 py-16">
+    <main className="min-h-screen px-6 py-10">
       <div className="mx-auto w-full max-w-3xl">
-        <header className="mb-10 text-center">
+        <header className="mb-7 text-center">
           <h1
             className="text-[clamp(2rem,5vw,3rem)] tracking-tight"
             style={{ fontFamily: '"Times New Roman", Times, serif' }}
@@ -686,11 +689,11 @@ export default function ConnectPage() {
           </p>
         </header>
 
-        <section className="rounded-2xl border border-white/15 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+        <section className="rounded-2xl border border-white/15 bg-white/[0.03] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
           <div className="space-y-8">
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-white/50">Setup flow</p>
-              <div className="mt-4 space-y-4">
+              <div className="mt-3 space-y-3">
                 <StepCard
                   stepNumber={1}
                   title={helperStepTitle}
@@ -753,7 +756,7 @@ export default function ConnectPage() {
                 >
                   {currentStepIndex === 2 ? (
                     <QrPanel
-                      minHeightClassName="min-h-80"
+                      minHeightClassName="min-h-64"
                       qrValue={pairingQrValue}
                       title="QR code coming soon"
                     />
@@ -768,7 +771,7 @@ export default function ConnectPage() {
                   isLast={true}
                 >
                   {currentStepIndex === 3 ? (
-                    <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+                    <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-4">
                       <p className="text-sm text-white/70">
                         {replayReceived
                           ? "Replay received. Redirecting to the Fairway Connect dashboard."
