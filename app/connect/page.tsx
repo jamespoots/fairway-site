@@ -359,6 +359,9 @@ export default function ConnectPage() {
           return;
         }
 
+        const statusRecord = isRecord(status) ? status : null;
+        const connectors = isRecord(statusRecord?.connectors) ? statusRecord.connectors : null;
+        const gsproStatus = isRecord(connectors?.gspro) ? connectors.gspro : null;
         const nextSummary = summarize(health, status);
 
         if (nextSummary.sessionId !== "Unavailable") {
@@ -444,6 +447,21 @@ export default function ConnectPage() {
           replayObservedAt: nextSummary.replayObservedAt,
           replayVideoUrl: nextSummary.replayVideoUrl,
           derivedStage,
+        });
+
+        console.log("[/connect] helper and gspro state", {
+          helperState: "found",
+          gsproAvailable:
+            typeof gsproStatus?.available === "boolean" ? gsproStatus.available : "missing",
+          gsproConnected:
+            typeof gsproStatus?.connected === "boolean" ? gsproStatus.connected : "missing",
+          gsproActive:
+            typeof gsproStatus?.active === "boolean" ? gsproStatus.active : "missing",
+          shotFeedConnected:
+            typeof gsproStatus?.shotFeedConnected === "boolean"
+              ? gsproStatus.shotFeedConnected
+              : "missing",
+          selectedStage: derivedStage,
         });
       } catch {
         if (!isActive) {
