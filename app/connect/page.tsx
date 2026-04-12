@@ -151,68 +151,6 @@ function buildPairingPayload(sessionId: string, desktopHost: string | null): str
   return pairingConfig ? JSON.stringify(pairingConfig) : null;
 }
 
-function formatDebugValue(value: string | boolean | null | undefined): string {
-  if (value === null) {
-    return "null";
-  }
-
-  if (value === undefined) {
-    return "undefined";
-  }
-
-  return String(value);
-}
-
-function getRenderedCopyForStage(stage: string) {
-  switch (stage) {
-    case "checking":
-      return {
-        title: "Checking for helper",
-        body: `Attempting to reach your local helper at ${CONNECT_HELPER_BASE_URL}.`,
-      };
-    case "not-found":
-      return {
-        title: "Helper not found",
-        body: "Fairway Connect requires a small desktop helper running locally before pairing can begin.",
-      };
-    case "gspro-disconnected":
-      return {
-        title: "Fairway Connect Helper is running",
-        body: "Your desktop helper is online, but the GSPro connector is not connected yet. Open GSPro and make sure the Fairway Connect integration is connected before continuing.",
-      };
-    case "gspro-waiting-first-shot":
-      return {
-        title: "Helper is running",
-        body: "Waiting to verify GSPro shot feed",
-      };
-    case "gspro-connected":
-      return {
-        title: "Helper connected to GSPro",
-        body: "Your desktop helper is running and GSPro is connected. Fairway is preparing the phone pairing step.",
-      };
-    case "pairing-ready":
-      return {
-        title: "Ready to connect your iPhone",
-        body: "Fairway Connect Helper and GSPro are ready. Fairway on iPhone can now scan to connect.",
-      };
-    case "phone-joined":
-      return {
-        title: "iPhone connected",
-        body: "Fairway on iPhone has joined this pairing session successfully.",
-      };
-    case "replay-ready":
-      return {
-        title: "Replay ready on desktop",
-        body: "Fairway on iPhone is connected and the first replay is ready in the Fairway Connect dashboard.",
-      };
-    default:
-      return {
-        title: "Unknown stage",
-        body: "No rendered copy selected.",
-      };
-  }
-}
-
 type LadderStepStatus = "complete" | "active" | "locked";
 
 function StepCard({
@@ -472,9 +410,6 @@ export default function ConnectPage() {
 
     return buildPairingPayload(summary.sessionId, desktopHost);
   }, [desktopHost, state, summary]);
-  const helperDetected = state === "found";
-  const qrPayloadAvailable = pairingQrValue !== null;
-  const shouldRenderQr = stage === "pairing-ready" && qrPayloadAvailable;
   const helperRunning = state === "found";
   const gsproShotFeedVerified = summary?.gsproActive === true;
   const iphoneConnected = summary?.phoneJoined === true;
@@ -502,22 +437,6 @@ export default function ConnectPage() {
     : undefined;
 
   useEffect(() => {
-    const renderedCopy = getRenderedCopyForStage(stage);
-
-    console.log("[/connect] rendered path", {
-      rawHelperState: state,
-      helperDetected,
-      gsproAvailable: summary?.gsproAvailable ?? null,
-      gsproConnected: summary?.gsproConnected ?? null,
-      gsproActive: summary?.gsproActive ?? null,
-      shotFeedConnected: summary?.shotFeedConnected ?? null,
-      selectedStage: stage,
-      selectedTitle: renderedCopy.title,
-      selectedBody: renderedCopy.body,
-    });
-  }, [helperDetected, stage, state, summary]);
-
-  useEffect(() => {
     if (!replayReceived || !helperDashboardUrl || hasRedirectedToDashboardRef.current) {
       return;
     }
@@ -543,11 +462,6 @@ export default function ConnectPage() {
           return;
         }
 
-        console.log("[/connect] raw helper status payload", status);
-
-        const statusRecord = isRecord(status) ? status : null;
-        const connectors = isRecord(statusRecord?.connectors) ? statusRecord.connectors : null;
-        const gsproStatus = isRecord(connectors?.gspro) ? connectors.gspro : null;
         const nextSummary = summarize(health, status);
 
         if (nextSummary.sessionId !== "Unavailable") {
@@ -588,16 +502,6 @@ export default function ConnectPage() {
             nextSummary.replayUpdatedAt = replayUpdatedAt;
             nextSummary.replayVersionKey =
               replayUpdatedAt !== "Unavailable" ? replayUpdatedAt : replayVideoUrl;
-
-            console.log("[/connect] latest replay state", {
-              sessionId: nextSummary.sessionId,
-              phoneJoined: nextSummary.phoneJoined,
-              pairedAt,
-              lastReplayAt,
-              replay,
-              replayVideoUrl,
-              replayUpdatedAt,
-            });
           } catch {
             nextSummary.phoneJoined = false;
             nextSummary.pairedAt = "Unavailable";
@@ -610,45 +514,6 @@ export default function ConnectPage() {
 
         setSummary(nextSummary);
         setState("found");
-
-        const derivedStage =
-          !nextSummary.gsproConnected
-            ? "gspro-disconnected"
-            : !nextSummary.gsproActive
-              ? "gspro-waiting-first-shot"
-              : !nextSummary.pairingReady
-                ? "gspro-connected"
-                : nextSummary.phoneJoined && nextSummary.replayVideoUrl !== "Unavailable"
-                  ? isFreshReplayForPairing(nextSummary.pairedAt, nextSummary.replayObservedAt)
-                    ? "replay-ready"
-                    : "phone-joined"
-                  : nextSummary.phoneJoined
-                    ? "phone-joined"
-                    : "pairing-ready";
-
-        console.log("[/connect] derived stage", {
-          sessionId: nextSummary.sessionId,
-          phoneJoined: nextSummary.phoneJoined,
-          pairedAt: nextSummary.pairedAt,
-          replayObservedAt: nextSummary.replayObservedAt,
-          replayVideoUrl: nextSummary.replayVideoUrl,
-          derivedStage,
-        });
-
-        console.log("[/connect] helper and gspro state", {
-          helperState: "found",
-          gsproAvailable:
-            typeof gsproStatus?.available === "boolean" ? gsproStatus.available : "missing",
-          gsproConnected:
-            typeof gsproStatus?.connected === "boolean" ? gsproStatus.connected : "missing",
-          gsproActive:
-            typeof gsproStatus?.active === "boolean" ? gsproStatus.active : "missing",
-          shotFeedConnected:
-            typeof gsproStatus?.shotFeedConnected === "boolean"
-              ? gsproStatus.shotFeedConnected
-              : "missing",
-          selectedStage: derivedStage,
-        });
       } catch {
         if (!isActive) {
           return;
@@ -686,7 +551,7 @@ export default function ConnectPage() {
         </header>
 
         <section className="rounded-2xl border border-white/15 bg-white/[0.03] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-          <div className="space-y-8">
+          <div>
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-white/50">Setup flow</p>
               <div className="mt-3 space-y-3">
@@ -758,104 +623,6 @@ export default function ConnectPage() {
                 />
               </div>
             </div>
-
-            {state === "found" && summary && (
-              <>
-                <div className="border border-white/10 bg-black/20 p-4 text-left text-xs text-white/65">
-                <p>QR debug</p>
-                <dl className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <div>
-                    <dt className="text-white/40">helperDetected</dt>
-                    <dd>{formatDebugValue(helperDetected)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-white/40">gsproConnected</dt>
-                    <dd>{formatDebugValue(summary.gsproConnected)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-white/40">pairingReady</dt>
-                    <dd>{formatDebugValue(summary.pairingReady)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-white/40">sessionId</dt>
-                    <dd className="break-all">{formatDebugValue(summary.sessionId)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-white/40">desktopHost</dt>
-                    <dd>{formatDebugValue(desktopHost)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-white/40">helperHttpUrl</dt>
-                    <dd className="break-all">{formatDebugValue(pairingConfig?.helperHttpUrl)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-white/40">helperWsUrl</dt>
-                    <dd className="break-all">{formatDebugValue(pairingConfig?.helperWsUrl)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-white/40">qrPayloadAvailable</dt>
-                    <dd>{formatDebugValue(qrPayloadAvailable)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-white/40">shouldRenderQr</dt>
-                    <dd>{formatDebugValue(shouldRenderQr)}</dd>
-                  </div>
-                </dl>
-                </div>
-
-                <div className="rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-left text-sm text-amber-50">
-                  <p className="text-xs uppercase tracking-[0.2em] text-amber-100/80">DEBUG CONNECT STATE</p>
-                  <dl className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <div>
-                      <dt className="text-amber-100/60">helperDetected</dt>
-                      <dd>{formatDebugValue(helperDetected)}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-amber-100/60">raw helper state</dt>
-                      <dd>{state}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-amber-100/60">gsproAvailable</dt>
-                      <dd>{formatDebugValue(summary.gsproAvailable)}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-amber-100/60">gsproConnected</dt>
-                      <dd>{formatDebugValue(summary.gsproConnected)}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-amber-100/60">gsproActive</dt>
-                      <dd>{formatDebugValue(summary.gsproActive)}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-amber-100/60">shotFeedConnected</dt>
-                      <dd>{formatDebugValue(summary.shotFeedConnected)}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-amber-100/60">selectedStage</dt>
-                      <dd>{stage}</dd>
-                    </div>
-                  </dl>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/45">Helper details</p>
-                  <dl className="mt-4 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
-                    <div>
-                      <dt className="text-white/45">API version</dt>
-                      <dd className="mt-1 text-white/80">{summary.apiVersion}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-white/45">Runtime start time</dt>
-                      <dd className="mt-1 text-white/80">{summary.runtimeStartTime}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-white/45">Session ID</dt>
-                      <dd className="mt-1 break-all text-white/80">{summary.sessionId}</dd>
-                    </div>
-                  </dl>
-                </div>
-              </>
-            )}
           </div>
         </section>
       </div>
