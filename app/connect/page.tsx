@@ -539,9 +539,9 @@ export default function ConnectPage() {
   }, [healthUrl, statusUrl]);
 
   return (
-    <main className="min-h-screen px-6 py-10">
-      <div className="mx-auto w-full max-w-3xl">
-        <header className="mb-5 text-center">
+    <main className="h-[calc(100dvh-9.5rem)] px-6 pt-6 pb-2 overflow-hidden">
+      <div className="mx-auto flex h-full w-full max-w-3xl flex-col">
+        <header className="mb-4 shrink-0 text-center">
           <h1
             className="text-[clamp(2rem,5vw,3rem)] tracking-tight"
             style={{ fontFamily: '"Times New Roman", Times, serif' }}
@@ -550,8 +550,8 @@ export default function ConnectPage() {
           </h1>
         </header>
 
-        <section className="rounded-2xl border border-white/15 bg-white/[0.03] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-          <div>
+        <section className="min-h-0 flex-1 rounded-2xl border border-white/15 bg-white/[0.03] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+          <div className="h-full overflow-y-auto pr-1">
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-white/50">Setup flow</p>
               <div className="mt-3 space-y-3">
