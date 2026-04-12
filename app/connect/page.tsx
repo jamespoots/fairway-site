@@ -326,6 +326,10 @@ export default function ConnectPage() {
     () => buildPairingConfig(summary?.sessionId ?? "", desktopHost),
     [desktopHost, summary?.sessionId]
   );
+  const helperDashboardUrl = useMemo(
+    () => (desktopHost ? `http://${desktopHost}:30304/` : null),
+    [desktopHost]
+  );
   const pairingQrValue = useMemo(() => {
     if (state !== "found" || !summary?.gsproConnected || !summary.pairingReady) {
       return null;
@@ -647,20 +651,30 @@ export default function ConnectPage() {
                 {stage === "replay-ready" && (
                   <div className="mt-3 space-y-5">
                     <div>
-                      <h2 className="text-2xl font-semibold text-white">First replay ready</h2>
+                      <h2 className="text-2xl font-semibold text-white">Replay ready on desktop</h2>
                       <p className="mt-3 max-w-2xl text-white/75">
-                        Fairway on iPhone is connected and the first replay is now available for this
-                        session.
+                        Fairway on iPhone is connected and the first replay is ready in the Fairway
+                        Connect dashboard.
                       </p>
                     </div>
 
                     <div className="flex min-h-80 items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                       <div>
                         <p className="text-sm uppercase tracking-[0.2em] text-white/45">Replay ready</p>
-                        <p className="mt-5 text-2xl font-semibold text-white">First replay ready</p>
+                        <p className="mt-5 text-2xl font-semibold text-white">Replay ready on desktop</p>
                         <p className="mx-auto mt-4 max-w-sm text-white/70">
-                          Replay detected for the active pairing session.
+                          Open Fairway Connect dashboard.
                         </p>
+                        {helperDashboardUrl && (
+                          <a
+                            href={helperDashboardUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-6 inline-flex rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/15"
+                          >
+                            Open Fairway Connect dashboard
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>
