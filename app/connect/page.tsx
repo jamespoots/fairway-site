@@ -225,7 +225,7 @@ function StepCard({
 }: {
   stepNumber: number;
   title: string;
-  copy: string;
+  copy?: string;
   status: LadderStepStatus;
   isLast: boolean;
   children?: ReactNode;
@@ -267,7 +267,7 @@ function StepCard({
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-white/45">Step {stepNumber}</p>
             <h2 className="mt-2 text-2xl font-semibold text-white">{title}</h2>
-            <p className="mt-3 max-w-2xl text-white/72">{copy}</p>
+            {copy ? <p className="mt-3 max-w-2xl text-white/72">{copy}</p> : null}
           </div>
 
           <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${badgeClassName}`}>
@@ -494,7 +494,7 @@ export default function ConnectPage() {
       : "Open GSPro and take one shot to confirm the feed.";
   const iphoneStepCopy = iphoneConnected
     ? "iPhone connected"
-    : "Scan this code with Fairway on iPhone.";
+    : undefined;
   const replayStepCopy = replayReceived
     ? "First replay received"
     : "Take a shot with Fairway recording on iPhone.";
