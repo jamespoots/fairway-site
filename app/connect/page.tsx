@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { CONNECT_HELPER_BASE_URL } from "@/app/config/connect";
 
@@ -417,6 +417,7 @@ function summarize(health: unknown, status: unknown): HelperSummary {
 export default function ConnectPage() {
   const [state, setState] = useState<ConnectState>("checking");
   const [summary, setSummary] = useState<HelperSummary | null>(null);
+  const hasRedirectedToDashboardRef = useRef(false);
 
   const healthUrl = useMemo(() => `${CONNECT_HELPER_BASE_URL}/health`, []);
   const statusUrl = useMemo(() => `${CONNECT_HELPER_BASE_URL}/status`, []);
@@ -481,13 +482,12 @@ export default function ConnectPage() {
       ? 1
       : !iphoneConnected
         ? 2
-        : !replayReceived
-          ? 3
-          : 4;
+        : 3;
   const helperStepCopy =
     helperRunning && summary
       ? "Fairway Connect helper is running"
       : "Start Fairway Connect on your desktop.";
+  const helperStepTitle = helperRunning ? "Helper running" : "Start Fairway Connect";
   const gsproStepCopy =
     gsproShotFeedVerified
       ? "GSPro shot feed verified"
@@ -498,9 +498,6 @@ export default function ConnectPage() {
   const replayStepCopy = replayReceived
     ? "First replay received"
     : "Take a shot with Fairway recording on iPhone.";
-  const dashboardStepCopy = replayReceived
-    ? "Open Fairway Connect dashboard to view replay."
-    : "Open Fairway Connect dashboard to view replay.";
 
   useEffect(() => {
     const renderedCopy = getRenderedCopyForStage(stage);
@@ -517,6 +514,15 @@ export default function ConnectPage() {
       selectedBody: renderedCopy.body,
     });
   }, [helperDetected, stage, state, summary]);
+
+  useEffect(() => {
+    if (!replayReceived || !helperDashboardUrl || hasRedirectedToDashboardRef.current) {
+      return;
+    }
+
+    hasRedirectedToDashboardRef.current = true;
+    window.location.href = helperDashboardUrl;
+  }, [helperDashboardUrl, replayReceived]);
 
   useEffect(() => {
     let isActive = true;
@@ -687,7 +693,7 @@ export default function ConnectPage() {
               <div className="mt-4 space-y-4">
                 <StepCard
                   stepNumber={1}
-                  title="Helper running"
+                  title={helperStepTitle}
                   copy={helperStepCopy}
                   status={currentStepIndex === 0 ? "active" : helperRunning ? "complete" : "locked"}
                   isLast={false}
@@ -764,39 +770,17 @@ export default function ConnectPage() {
                   title="Send first replay"
                   copy={replayStepCopy}
                   status={currentStepIndex === 3 ? "active" : replayReceived ? "complete" : "locked"}
-                  isLast={false}
+                  isLast={true}
                 >
                   {currentStepIndex === 3 ? (
                     <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
                       <p className="text-sm text-white/70">
-                        {iphoneConnected
-                          ? "Fairway on iPhone is connected. Take a recorded shot to send the first replay."
-                          : "This step will unlock after your iPhone connects."}
+                        {replayReceived
+                          ? "Replay received. Redirecting to the Fairway Connect dashboard."
+                          : iphoneConnected
+                            ? "Fairway on iPhone is connected. Take a recorded shot to send the first replay."
+                            : "This step will unlock after your iPhone connects."}
                       </p>
-                    </div>
-                  ) : null}
-                </StepCard>
-
-                <StepCard
-                  stepNumber={5}
-                  title="Review in dashboard"
-                  copy={dashboardStepCopy}
-                  status={currentStepIndex === 4 ? "active" : "locked"}
-                  isLast={true}
-                >
-                  {currentStepIndex === 4 ? (
-                    <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
-                      <p className="text-sm text-white/70">Dashboard ready</p>
-                      {helperDashboardUrl && (
-                        <a
-                          href={helperDashboardUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-4 inline-flex rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/15"
-                        >
-                          Open Fairway Connect dashboard
-                        </a>
-                      )}
                     </div>
                   ) : null}
                 </StepCard>
