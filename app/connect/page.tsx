@@ -12,9 +12,11 @@ type HelperSummary = {
   apiVersion: string;
   runtimeStartTime: string;
   gsproConnectorState: string;
+  gsproAvailable: boolean;
   pairingReadiness: string;
   gsproConnected: boolean;
   gsproActive: boolean;
+  shotFeedConnected: boolean;
   lastShotAt: string;
   pairingReady: boolean;
   phoneJoined: boolean;
@@ -161,6 +163,56 @@ function formatDebugValue(value: string | boolean | null | undefined): string {
   return String(value);
 }
 
+function getRenderedCopyForStage(stage: string) {
+  switch (stage) {
+    case "checking":
+      return {
+        title: "Checking for helper",
+        body: `Attempting to reach your local helper at ${CONNECT_HELPER_BASE_URL}.`,
+      };
+    case "not-found":
+      return {
+        title: "Helper not found",
+        body: "Fairway Connect requires a small desktop helper running locally before pairing can begin.",
+      };
+    case "gspro-disconnected":
+      return {
+        title: "Fairway Connect Helper is running",
+        body: "Your desktop helper is online, but the GSPro connector is not connected yet. Open GSPro and make sure the Fairway Connect integration is connected before continuing.",
+      };
+    case "gspro-waiting-first-shot":
+      return {
+        title: "GSPro connected",
+        body: "GSPro connected. Waiting for first shot.",
+      };
+    case "gspro-connected":
+      return {
+        title: "Helper connected to GSPro",
+        body: "Your desktop helper is running and GSPro is connected. Fairway is preparing the phone pairing step.",
+      };
+    case "pairing-ready":
+      return {
+        title: "Ready to connect your iPhone",
+        body: "Fairway Connect Helper and GSPro are ready. Fairway on iPhone can now scan to connect.",
+      };
+    case "phone-joined":
+      return {
+        title: "iPhone connected",
+        body: "Fairway on iPhone has joined this pairing session successfully.",
+      };
+    case "replay-ready":
+      return {
+        title: "Replay ready on desktop",
+        body: "Fairway on iPhone is connected and the first replay is ready in the Fairway Connect dashboard.",
+      };
+    default:
+      return {
+        title: "Unknown stage",
+        body: "No rendered copy selected.",
+      };
+  }
+}
+
 function QrPanel({
   title,
   description,
@@ -242,6 +294,10 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     typeof gspro?.state === "string" && gspro.state.trim().length > 0
       ? gspro.state
       : firstValue(status, ["connectors.gspro.state", "gspro.connector.state", "gspro.state"]);
+  const gsproAvailable =
+    typeof gspro?.available === "boolean"
+      ? gspro.available
+      : false;
   const lastShotAt = firstValue(status, ["connectors.gspro.lastShotAt", "gspro.lastShotAt"]);
   const pairingReadiness =
     typeof pairing?.ready === "boolean"
@@ -260,6 +316,10 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     gsproConnected && typeof gspro?.active === "boolean"
       ? gspro.active
       : false;
+  const shotFeedConnected =
+    gsproConnected && typeof gspro?.shotFeedConnected === "boolean"
+      ? gspro.shotFeedConnected
+      : false;
   const sessionId =
     typeof pairing?.sessionId === "string" && pairing.sessionId.trim().length > 0
       ? pairing.sessionId
@@ -269,9 +329,11 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     apiVersion,
     runtimeStartTime,
     gsproConnectorState,
+    gsproAvailable,
     pairingReadiness,
     gsproConnected,
     gsproActive,
+    shotFeedConnected,
     lastShotAt,
     pairingReady,
     phoneJoined: false,
@@ -343,6 +405,22 @@ export default function ConnectPage() {
   const shouldRenderQr = stage === "pairing-ready" && qrPayloadAvailable;
 
   useEffect(() => {
+    const renderedCopy = getRenderedCopyForStage(stage);
+
+    console.log("[/connect] rendered path", {
+      rawHelperState: state,
+      helperDetected,
+      gsproAvailable: summary?.gsproAvailable ?? null,
+      gsproConnected: summary?.gsproConnected ?? null,
+      gsproActive: summary?.gsproActive ?? null,
+      shotFeedConnected: summary?.shotFeedConnected ?? null,
+      selectedStage: stage,
+      selectedTitle: renderedCopy.title,
+      selectedBody: renderedCopy.body,
+    });
+  }, [helperDetected, stage, state, summary]);
+
+  useEffect(() => {
     let isActive = true;
     let pollingId: number | null = null;
 
@@ -358,6 +436,8 @@ export default function ConnectPage() {
         if (!isActive) {
           return;
         }
+
+        console.log("[/connect] raw helper status payload", status);
 
         const statusRecord = isRecord(status) ? status : null;
         const connectors = isRecord(statusRecord?.connectors) ? statusRecord.connectors : null;
