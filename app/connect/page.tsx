@@ -18,6 +18,9 @@ type HelperSummary = {
   lastShotAt: string;
   pairingReady: boolean;
   phoneJoined: boolean;
+  replayUpdatedAt: string;
+  replayVersionKey: string;
+  replayVideoUrl: string;
   sessionId: string;
 };
 
@@ -236,6 +239,9 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     lastShotAt,
     pairingReady,
     phoneJoined: false,
+    replayUpdatedAt: "Unavailable",
+    replayVersionKey: "Unavailable",
+    replayVideoUrl: "Unavailable",
     sessionId,
   };
 }
@@ -261,6 +267,10 @@ export default function ConnectPage() {
 
     if (!summary.pairingReady) {
       return "gspro-connected";
+    }
+
+    if (summary.phoneJoined && summary.replayVideoUrl !== "Unavailable") {
+      return "replay-ready";
     }
 
     if (summary.phoneJoined) {
@@ -314,8 +324,26 @@ export default function ConnectPage() {
             if (isActive && isRecord(latestReplay) && typeof latestReplay.phoneJoined === "boolean") {
               nextSummary.phoneJoined = latestReplay.phoneJoined;
             }
+
+            const replay = isRecord(latestReplay) && isRecord(latestReplay.replay) ? latestReplay.replay : null;
+            const replayVideoUrl =
+              typeof replay?.videoUrl === "string" && replay.videoUrl.trim().length > 0
+                ? replay.videoUrl
+                : "Unavailable";
+            const replayUpdatedAt =
+              typeof replay?.updatedAt === "string" && replay.updatedAt.trim().length > 0
+                ? replay.updatedAt
+                : "Unavailable";
+
+            nextSummary.replayVideoUrl = replayVideoUrl;
+            nextSummary.replayUpdatedAt = replayUpdatedAt;
+            nextSummary.replayVersionKey =
+              replayUpdatedAt !== "Unavailable" ? replayUpdatedAt : replayVideoUrl;
           } catch {
             nextSummary.phoneJoined = false;
+            nextSummary.replayUpdatedAt = "Unavailable";
+            nextSummary.replayVersionKey = "Unavailable";
+            nextSummary.replayVideoUrl = "Unavailable";
           }
         }
 
@@ -519,6 +547,28 @@ export default function ConnectPage() {
                         <p className="mt-5 text-2xl font-semibold text-white">iPhone connected</p>
                         <p className="mx-auto mt-4 max-w-sm text-white/70">
                           Waiting for first replay.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {stage === "replay-ready" && (
+                  <div className="mt-3 space-y-5">
+                    <div>
+                      <h2 className="text-2xl font-semibold text-white">First replay ready</h2>
+                      <p className="mt-3 max-w-2xl text-white/75">
+                        Fairway on iPhone is connected and the first replay is now available for this
+                        session.
+                      </p>
+                    </div>
+
+                    <div className="flex min-h-80 items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                      <div>
+                        <p className="text-sm uppercase tracking-[0.2em] text-white/45">Replay ready</p>
+                        <p className="mt-5 text-2xl font-semibold text-white">First replay ready</p>
+                        <p className="mx-auto mt-4 max-w-sm text-white/70">
+                          Replay detected for the active pairing session.
                         </p>
                       </div>
                     </div>
