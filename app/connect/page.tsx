@@ -77,12 +77,34 @@ function formatStartTime(raw: string): string {
   return parsed.toLocaleString();
 }
 
-function isFreshReplayForPairing(pairedAt: string, replayObservedAt: string): boolean {
-  const pairedTimestamp = Date.parse(pairedAt);
-  const replayTimestamp = Date.parse(replayObservedAt);
+function parseTimestamp(value: string): number | null {
+  if (value.trim().length === 0 || value === "Unavailable") {
+    return null;
+  }
 
-  if (Number.isNaN(pairedTimestamp) || Number.isNaN(replayTimestamp)) {
-    return false;
+  const numericValue = Number(value);
+
+  if (Number.isFinite(numericValue)) {
+    if (numericValue > 1e12) {
+      return numericValue;
+    }
+
+    if (numericValue > 1e9) {
+      return numericValue * 1000;
+    }
+  }
+
+  const parsedValue = Date.parse(value);
+
+  return Number.isNaN(parsedValue) ? null : parsedValue;
+}
+
+function isFreshReplayForPairing(pairedAt: string, replayObservedAt: string): boolean {
+  const pairedTimestamp = parseTimestamp(pairedAt);
+  const replayTimestamp = parseTimestamp(replayObservedAt);
+
+  if (pairedTimestamp === null || replayTimestamp === null) {
+    return true;
   }
 
   return replayTimestamp >= pairedTimestamp;
@@ -372,6 +394,16 @@ export default function ConnectPage() {
             nextSummary.replayUpdatedAt = replayUpdatedAt;
             nextSummary.replayVersionKey =
               replayUpdatedAt !== "Unavailable" ? replayUpdatedAt : replayVideoUrl;
+
+            console.log("[/connect] latest replay state", {
+              sessionId: nextSummary.sessionId,
+              phoneJoined: nextSummary.phoneJoined,
+              pairedAt,
+              lastReplayAt,
+              replay,
+              replayVideoUrl,
+              replayUpdatedAt,
+            });
           } catch {
             nextSummary.phoneJoined = false;
             nextSummary.pairedAt = "Unavailable";
@@ -384,6 +416,30 @@ export default function ConnectPage() {
 
         setSummary(nextSummary);
         setState("found");
+
+        const derivedStage =
+          !nextSummary.gsproConnected
+            ? "gspro-disconnected"
+            : !nextSummary.gsproActive
+              ? "gspro-waiting-first-shot"
+              : !nextSummary.pairingReady
+                ? "gspro-connected"
+                : nextSummary.phoneJoined && nextSummary.replayVideoUrl !== "Unavailable"
+                  ? isFreshReplayForPairing(nextSummary.pairedAt, nextSummary.replayObservedAt)
+                    ? "replay-ready"
+                    : "phone-joined"
+                  : nextSummary.phoneJoined
+                    ? "phone-joined"
+                    : "pairing-ready";
+
+        console.log("[/connect] derived stage", {
+          sessionId: nextSummary.sessionId,
+          phoneJoined: nextSummary.phoneJoined,
+          pairedAt: nextSummary.pairedAt,
+          replayObservedAt: nextSummary.replayObservedAt,
+          replayVideoUrl: nextSummary.replayVideoUrl,
+          derivedStage,
+        });
       } catch {
         if (!isActive) {
           return;
