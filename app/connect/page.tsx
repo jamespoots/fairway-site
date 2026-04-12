@@ -489,12 +489,9 @@ export default function ConnectPage() {
   const helperStepCopy = undefined;
   const helperStepTitle = helperRunning ? "Fairway Connect is running" : "Start Fairway Connect";
   const gsproStepTitle = gsproShotFeedVerified
-    ? "Verify GSPro shot feed"
+    ? "GSPro shot feed verified"
     : "Take one shot in GSPro";
-  const gsproStepCopy =
-    gsproShotFeedVerified
-      ? "GSPro shot feed verified"
-      : undefined;
+  const gsproStepCopy = undefined;
   const iphoneStepCopy = iphoneConnected
     ? "iPhone connected"
     : undefined;
