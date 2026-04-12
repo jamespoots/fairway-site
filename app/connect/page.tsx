@@ -250,7 +250,7 @@ function StepCard({
       : status === "active"
         ? "border border-sky-300/30 bg-sky-300/15 text-sky-50"
         : "border border-white/10 bg-white/[0.04] text-white/55";
-  const statusLabel = status === "complete" ? "Complete" : status === "active" ? "Current" : "Locked";
+  const statusLabel = status === "complete" ? "Complete" : status === "active" ? "Current" : "Pending";
 
   return (
     <div className="flex gap-3">
