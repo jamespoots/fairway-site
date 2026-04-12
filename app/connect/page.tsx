@@ -284,12 +284,12 @@ function StepCard({
 function QrPanel({
   title,
   description,
-  label = "QR placeholder",
+  label,
   minHeightClassName,
   qrValue,
 }: {
   title: string;
-  description: string;
+  description?: string;
   label?: string;
   minHeightClassName: string;
   qrValue?: string | null;
@@ -299,7 +299,7 @@ function QrPanel({
       className={`flex ${minHeightClassName} items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`}
     >
       <div>
-        <p className="text-sm uppercase tracking-[0.2em] text-white/45">{label}</p>
+        {label ? <p className="text-sm uppercase tracking-[0.2em] text-white/45">{label}</p> : null}
         {qrValue ? (
           <div className="mx-auto mt-5 flex h-48 w-48 items-center justify-center rounded-2xl bg-white p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
             <QRCodeSVG value={qrValue} size={168} bgColor="#ffffff" fgColor="#111111" includeMargin />
@@ -309,7 +309,7 @@ function QrPanel({
             <span className="text-sm text-white/60">{title}</span>
           </div>
         )}
-        <p className="mx-auto mt-5 max-w-sm text-sm text-white/65">{description}</p>
+        {description ? <p className="mx-auto mt-5 max-w-sm text-sm text-white/65">{description}</p> : null}
       </div>
     </div>
   );
@@ -494,7 +494,7 @@ export default function ConnectPage() {
       : "Open GSPro and take one shot to confirm the feed.";
   const iphoneStepCopy = iphoneConnected
     ? "iPhone connected"
-    : "Scan this QR code with Fairway on iPhone.";
+    : "Scan this code with Fairway on iPhone.";
   const replayStepCopy = replayReceived
     ? "First replay received"
     : "Take a shot with Fairway recording on iPhone.";
@@ -756,11 +756,6 @@ export default function ConnectPage() {
                       minHeightClassName="min-h-80"
                       qrValue={pairingQrValue}
                       title="QR code coming soon"
-                      description={
-                        pairingQrValue
-                          ? "Scan with Fairway on iPhone to connect."
-                          : "This reserved panel will display the production pairing QR when generation is enabled."
-                      }
                     />
                   ) : null}
                 </StepCard>
