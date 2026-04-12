@@ -822,6 +822,40 @@ export default function ConnectPage() {
                 </dl>
               </div>
 
+              <div className="rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-left text-sm text-amber-50">
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-100/80">DEBUG CONNECT STATE</p>
+                <dl className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-amber-100/60">helperDetected</dt>
+                    <dd>{formatDebugValue(helperDetected)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-amber-100/60">raw helper state</dt>
+                    <dd>{state}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-amber-100/60">gsproAvailable</dt>
+                    <dd>{formatDebugValue(summary.gsproAvailable)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-amber-100/60">gsproConnected</dt>
+                    <dd>{formatDebugValue(summary.gsproConnected)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-amber-100/60">gsproActive</dt>
+                    <dd>{formatDebugValue(summary.gsproActive)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-amber-100/60">shotFeedConnected</dt>
+                    <dd>{formatDebugValue(summary.shotFeedConnected)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-amber-100/60">selectedStage</dt>
+                    <dd>{stage}</dd>
+                  </div>
+                </dl>
+              </div>
+
               <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
                 <p className="text-xs uppercase tracking-[0.2em] text-white/45">Helper details</p>
                 <dl className="mt-4 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
