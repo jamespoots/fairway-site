@@ -520,12 +520,15 @@ export default function ConnectPage() {
                       </p>
                     </div>
 
-                    <QrPanel
-                      minHeightClassName="min-h-80"
-                      qrValue={pairingQrValue}
-                      title="QR code coming soon"
-                      description="Scan with Fairway on iPhone to connect."
-                    />
+                    <div className="flex min-h-80 items-center justify-center rounded-3xl border border-white/15 bg-white/[0.04] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                      <div>
+                        <p className="text-sm uppercase tracking-[0.2em] text-white/45">Paired state</p>
+                        <p className="mt-5 text-2xl font-semibold text-white">iPhone connected</p>
+                        <p className="mx-auto mt-4 max-w-sm text-white/70">
+                          Waiting for first replay.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
