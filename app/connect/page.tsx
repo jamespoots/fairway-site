@@ -492,9 +492,8 @@ export default function ConnectPage() {
     ? "GSPro shot feed verified"
     : "Take one shot in GSPro";
   const gsproStepCopy = undefined;
-  const iphoneStepCopy = iphoneConnected
-    ? "iPhone connected"
-    : undefined;
+  const iphoneStepTitle = iphoneConnected ? "iPhone connected" : "Connect your iPhone";
+  const iphoneStepCopy = undefined;
   const replayStepCopy = replayReceived
     ? "First replay received"
     : "Take a shot with Fairway recording on iPhone.";
@@ -736,7 +735,7 @@ export default function ConnectPage() {
 
                 <StepCard
                   stepNumber={3}
-                  title="Connect your iPhone"
+                  title={iphoneStepTitle}
                   copy={iphoneStepCopy}
                   status={currentStepIndex === 2 ? "active" : iphoneConnected ? "complete" : "locked"}
                   isLast={false}
