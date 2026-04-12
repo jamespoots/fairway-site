@@ -494,7 +494,7 @@ export default function ConnectPage() {
   const gsproStepCopy =
     gsproShotFeedVerified
       ? "GSPro shot feed verified"
-      : "Open GSPro and take one shot to confirm the feed.";
+      : undefined;
   const iphoneStepCopy = iphoneConnected
     ? "iPhone connected"
     : undefined;
