@@ -242,10 +242,6 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     typeof gspro?.state === "string" && gspro.state.trim().length > 0
       ? gspro.state
       : firstValue(status, ["connectors.gspro.state", "gspro.connector.state", "gspro.state"]);
-  const gsproActive =
-    typeof gspro?.active === "boolean"
-      ? gspro.active
-      : firstValue(status, ["connectors.gspro.active"]).toLowerCase() === "true";
   const lastShotAt = firstValue(status, ["connectors.gspro.lastShotAt", "gspro.lastShotAt"]);
   const pairingReadiness =
     typeof pairing?.ready === "boolean"
@@ -258,7 +254,11 @@ function summarize(health: unknown, status: unknown): HelperSummary {
   const pairingReady =
     typeof pairing?.ready === "boolean"
       ? pairing.ready
-      : pairingReadiness.toLowerCase() === "true";
+      : false;
+  const gsproActive =
+    gsproConnected && typeof gspro?.active === "boolean"
+      ? gspro.active
+      : false;
   const sessionId =
     typeof pairing?.sessionId === "string" && pairing.sessionId.trim().length > 0
       ? pairing.sessionId
