@@ -493,7 +493,7 @@ export default function ConnectPage() {
   const helperStepTitle = helperRunning ? "Helper running" : "Start Fairway Connect";
   const gsproStepTitle = gsproShotFeedVerified
     ? "Verify GSPro shot feed"
-    : "Open GSPro and take one shot to confirm the feed";
+    : "Take one shot in GSPro";
   const gsproStepCopy =
     gsproShotFeedVerified
       ? "GSPro shot feed verified"
