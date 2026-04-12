@@ -18,6 +18,8 @@ type HelperSummary = {
   lastShotAt: string;
   pairingReady: boolean;
   phoneJoined: boolean;
+  pairedAt: string;
+  replayObservedAt: string;
   replayUpdatedAt: string;
   replayVersionKey: string;
   replayVideoUrl: string;
@@ -73,6 +75,17 @@ function formatStartTime(raw: string): string {
   }
 
   return parsed.toLocaleString();
+}
+
+function isFreshReplayForPairing(pairedAt: string, replayObservedAt: string): boolean {
+  const pairedTimestamp = Date.parse(pairedAt);
+  const replayTimestamp = Date.parse(replayObservedAt);
+
+  if (Number.isNaN(pairedTimestamp) || Number.isNaN(replayTimestamp)) {
+    return false;
+  }
+
+  return replayTimestamp >= pairedTimestamp;
 }
 
 function isLoopbackHost(hostname: string): boolean {
@@ -239,6 +252,8 @@ function summarize(health: unknown, status: unknown): HelperSummary {
     lastShotAt,
     pairingReady,
     phoneJoined: false,
+    pairedAt: "Unavailable",
+    replayObservedAt: "Unavailable",
     replayUpdatedAt: "Unavailable",
     replayVersionKey: "Unavailable",
     replayVideoUrl: "Unavailable",
@@ -269,7 +284,12 @@ export default function ConnectPage() {
       return "gspro-connected";
     }
 
-    if (summary.phoneJoined && summary.replayVideoUrl !== "Unavailable") {
+    // A replay from earlier in the same session must not unlock replay-ready for a new pairing.
+    if (
+      summary.phoneJoined &&
+      summary.replayVideoUrl !== "Unavailable" &&
+      isFreshReplayForPairing(summary.pairedAt, summary.replayObservedAt)
+    ) {
       return "replay-ready";
     }
 
@@ -326,6 +346,7 @@ export default function ConnectPage() {
             }
 
             const replay = isRecord(latestReplay) && isRecord(latestReplay.replay) ? latestReplay.replay : null;
+            const latestReplayRecord = isRecord(latestReplay) ? latestReplay : null;
             const replayVideoUrl =
               typeof replay?.videoUrl === "string" && replay.videoUrl.trim().length > 0
                 ? replay.videoUrl
@@ -334,13 +355,27 @@ export default function ConnectPage() {
               typeof replay?.updatedAt === "string" && replay.updatedAt.trim().length > 0
                 ? replay.updatedAt
                 : "Unavailable";
+            const pairedAt =
+              typeof latestReplayRecord?.pairedAt === "string" && latestReplayRecord.pairedAt.trim().length > 0
+                ? latestReplayRecord.pairedAt
+                : "Unavailable";
+            const lastReplayAt =
+              typeof latestReplayRecord?.lastReplayAt === "string" && latestReplayRecord.lastReplayAt.trim().length > 0
+                ? latestReplayRecord.lastReplayAt
+                : "Unavailable";
+            const replayObservedAt =
+              replayUpdatedAt !== "Unavailable" ? replayUpdatedAt : lastReplayAt;
 
             nextSummary.replayVideoUrl = replayVideoUrl;
+            nextSummary.pairedAt = pairedAt;
+            nextSummary.replayObservedAt = replayObservedAt;
             nextSummary.replayUpdatedAt = replayUpdatedAt;
             nextSummary.replayVersionKey =
               replayUpdatedAt !== "Unavailable" ? replayUpdatedAt : replayVideoUrl;
           } catch {
             nextSummary.phoneJoined = false;
+            nextSummary.pairedAt = "Unavailable";
+            nextSummary.replayObservedAt = "Unavailable";
             nextSummary.replayUpdatedAt = "Unavailable";
             nextSummary.replayVersionKey = "Unavailable";
             nextSummary.replayVideoUrl = "Unavailable";
