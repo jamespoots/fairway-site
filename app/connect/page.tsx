@@ -491,6 +491,9 @@ export default function ConnectPage() {
       ? "Fairway Connect helper is running"
       : "Start Fairway Connect on your desktop.";
   const helperStepTitle = helperRunning ? "Helper running" : "Start Fairway Connect";
+  const gsproStepTitle = gsproShotFeedVerified
+    ? "Verify GSPro shot feed"
+    : "Open GSPro and take one shot to confirm the feed";
   const gsproStepCopy =
     gsproShotFeedVerified
       ? "GSPro shot feed verified"
@@ -731,21 +734,11 @@ export default function ConnectPage() {
 
                 <StepCard
                   stepNumber={2}
-                  title="Verify GSPro shot feed"
+                  title={gsproStepTitle}
                   copy={gsproStepCopy}
                   status={currentStepIndex === 1 ? "active" : gsproShotFeedVerified ? "complete" : "locked"}
                   isLast={false}
-                >
-                  {currentStepIndex === 1 ? (
-                    <div className="rounded-2xl border border-sky-300/25 bg-sky-300/10 p-4">
-                      <p className="text-sm font-medium text-sky-50">
-                        {stage === "gspro-waiting-first-shot"
-                          ? "Take one shot in GSPro to confirm connection."
-                          : "Open GSPro and take one shot to confirm the feed."}
-                      </p>
-                    </div>
-                  ) : null}
-                </StepCard>
+                />
 
                 <StepCard
                   stepNumber={3}
