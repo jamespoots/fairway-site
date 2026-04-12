@@ -676,16 +676,13 @@ export default function ConnectPage() {
   return (
     <main className="min-h-screen px-6 py-10">
       <div className="mx-auto w-full max-w-3xl">
-        <header className="mb-7 text-center">
+        <header className="mb-5 text-center">
           <h1
             className="text-[clamp(2rem,5vw,3rem)] tracking-tight"
             style={{ fontFamily: '"Times New Roman", Times, serif' }}
           >
             Fairway Connect
           </h1>
-          <p className="mt-3 text-white/70">
-            Securely checks your local Fairway desktop helper to prepare pairing.
-          </p>
         </header>
 
         <section className="rounded-2xl border border-white/15 bg-white/[0.03] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
